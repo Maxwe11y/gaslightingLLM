@@ -1,0 +1,8 @@
+{
+    "api_type": "open_ai",
+    "api_base": "",
+    "api_version": "",
+    "api_key": "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",
+    "model_engine": "",
+    "model_family": "gpt-3.5-turbo"
+}
