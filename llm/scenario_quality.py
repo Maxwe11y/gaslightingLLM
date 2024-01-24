@@ -83,9 +83,7 @@ if __name__ == '__main__':
                      'Oliver is admitted to his dream university', 'Tom got promoted at the company.', 'Cynthia did not pass the math exam at the end of last term.']
 
     num_gen = 20
-
     target = 100
-
     num_hints = 5
 
     while len(generated_scenarios) <= target:
