@@ -133,8 +133,8 @@ if __name__ == '__main__':
 
     while len(generated_scenarios) <= target:
 
-        Profile_new = "You are expert Alex. You are supposed to provide several short, diverse, concise and precise script scenes described in one short sentence." \
-                      "Here are some examples of good script scenes for your reference: {} ".format(example_hints) \
+        Profile_new = "You are expert Alex. You are supposed to provide several short, diverse, concise and precise script scenes described in one short sentence. " \
+                      "Please make sure the script scence starts from the name of the character. Here are some examples of good script scenes for your reference: {} ".format(example_hints) \
                       + (" Please generate {} good script scenes using the aforementioned good script scenes as references."
                          "The outputs should be separated by newline character '\\n'.\n").format(
             num_gen)
