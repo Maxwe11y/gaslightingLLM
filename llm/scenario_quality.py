@@ -11,6 +11,10 @@ import string
 import re
 import asyncio
 import numpy as np
+import json
+import logging
+from generate_scenario import save_data
+
 def num_tokens_from_string(string, encoding_name):
     encoding = tiktoken.get_encoding(encoding_name)
     num_tokens = len(encoding.encode(string))
@@ -83,47 +87,13 @@ async def chat(Profile_new):
     return chat_completion.choices[0].message.content
 
 
-if __name__ == '__main__':
-
-    max_tok = 2000
-
-    # scenarios = load_data('sce_topic_final.txt', path='./data')
-    # # get response from ChatGPT
-    # for scenario in scenarios:
-    #     # chat = [{"role": 'system', "content": scenario}]
-    #
-    #     Profile = "You are expert Alex. You are supposed to examine or evaluate several script scenes that happened in one person or between two persons." \
-    #               "Here are some examples of good script scenes for your reference: 'Max is going to perform at a concert.', 'John's design is rejected by the magzaine.', 'Oliver is admitted to his dream university.'," \
-    #               "'Tom got promoted at the company.', 'Cynthia did not pass the math exam at the end of last term.' " \
-    #               "You have to carefully determine whether a script scene is good or bad based on the good script scenes above. If good, please fill [Modification] with NA. If bad, please modify the scene using the aforementioned good script scenes as references. " \
-    #                "The [Modification] should be precise and short. Given a script scenario below, please fill the Judgment. Please do not fill the modification unless the Judgment is bad. \n" \
-    #               + "[The script scene] {} \n".format(scenario) \
-    #               + "[Judgment] \n" \
-    #               + "[Modification]"
-    #
-    #
-    #     query = "Please fill the Judgement. Please do not fill the modification unless the Judgment is bad."
-    #
-    #     chat_completion = client.chat.completions.create(
-    #         messages=[
-    #             {
-    #                 "role": "system",
-    #                 "content": Profile,
-    #             }
-    #         ],
-    #         model="gpt-3.5-turbo",
-    #     )
-    #     res = chat_completion.choices[0].message.content
-    #
-    #     tokens = TokenPricer()
-    #     print(tokens.gpt_get_estimated_cost(res, max_tokens=0))
-    #     print(res)
-
-
+def gpt_scenarios():
     generated_scenarios = []
 
-    example_hints = ['Max is going to perform at a concert.', "John's design is rejected by the magzaine.", "Anderson is rejected by his dream school",
-                     'Oliver is admitted to his dream university', 'Tom got promoted at the company.', 'Cynthia did not pass the math exam at the end of last term.']
+    example_hints = ['Max is going to perform at a concert.', "John's design is rejected by the magzaine.",
+                     "Anderson is rejected by his dream school",
+                     'Oliver is admitted to his dream university', 'Tom got promoted at the company.',
+                     'Cynthia did not pass the math exam at the end of last term.']
 
     num_gen = 40
     target = 5000
@@ -134,22 +104,12 @@ if __name__ == '__main__':
     while len(generated_scenarios) <= target:
 
         Profile_new = "You are expert Alex. You are supposed to provide several short, diverse, concise and precise script scenes described in one short sentence. " \
-                      "Please make sure the script scence starts from the name of the character. Here are some examples of good script scenes for your reference: {} ".format(example_hints) \
-                      + (" Please generate {} good script scenes using the aforementioned good script scenes as references."
-                         "The outputs should be separated by newline character '\\n'.\n").format(
+                      "Please make sure the script scence starts from the name of the character. Here are some examples of good script scenes for your reference: {} ".format(
+            example_hints) \
+                      + (
+                          " Please generate {} good script scenes using the aforementioned good script scenes as references."
+                          "The outputs should be separated by newline character '\\n'.\n").format(
             num_gen)
-
-        # chat_completion = client.chat.completions.create(
-        #     messages=[
-        #         {
-        #             "role": "system",
-        #             "content": Profile_new,
-        #         }
-        #     ],
-        #     model="gpt-3.5-turbo",
-        # )
-
-        # results = chat_completion.choices[0].message.content
 
         results = asyncio.run(chat(Profile_new=Profile_new))
 
@@ -161,13 +121,13 @@ if __name__ == '__main__':
             # hints = random.sample(scenarios, num_hints)
             # hints = np.random.choice(scenarios, size = num_hints, replace=False)
             if len(scenarios) == num_gen:
+
                 hints = get_hints(tokens=tokens, scenarios=scenarios, num_hints=num_hints, hint_limit=hint_limit)
             else:
                 print('generation number exception!')
-                print('scenarios', scenarios)
                 print('num_scenarios', len(scenarios))
-                print('results', results)
-                continue
+
+                hints = get_hints(tokens=tokens, scenarios=scenarios, num_hints=num_hints, hint_limit=hint_limit)
 
         else:
             print('instance error, not a list!')
@@ -179,9 +139,78 @@ if __name__ == '__main__':
         # length = [tokens.gpt_get_estimated_cost(i, max_tokens=0) for i in generated_scenarios]
         # avg_length = sum(length)/80
 
-
     with open('./data/gpt_generated_scenarios.txt', 'w') as f:
         f.writelines('\n'.join(generated_scenarios))
 
+
+
+def diagsum_hints(tokens=None, logger=None):
+
+    selected_scenarios = {}
+
+    scenarios = load_data('sce_topic_final.txt', path='./data')
+
+    # scenarios = scenarios[0:10]
+    # get response from ChatGPT
+    for scenario in scenarios:
+
+        Profile = "You are expert Alex. You are supposed to examine or evaluate several script scenes that happened in one person or between two persons." \
+                  "Here are some examples of good script scenes for your reference: 'Max is going to perform at a concert.', 'John's design is rejected by the magzaine.', 'Oliver is admitted to his dream university.'," \
+                  "'Tom got promoted at the company.', 'Cynthia did not pass the math exam at the end of last term.' " \
+                  "You have to carefully determine whether a script scene is good or bad based on the good script scenes above. \n" \
+                  + "[The script scene] {} \n".format(scenario) \
+                  + "[Judgment] \n" \
+
+        query = "Please fill the Judgement by either good or bad."
+
+
+        # print('input_tokens', tokens.gpt_get_estimated_cost(Profile + query, max_tokens=0))
+        input_tokens = tokens.gpt_get_estimated_cost(Profile + query, max_tokens=0)
+        logger.info('input_tokens {}'.format(input_tokens))
+
+        loop = asyncio.get_event_loop()
+        results = loop.run_until_complete(chat(Profile + query))
+        # results = asyncio.run(chat(Profile + query))
+        results = results.lower()
+        while results not in ['good', 'bad']:
+            # results = asyncio.run(chat(Profile + query))
+            loop = asyncio.get_event_loop()
+            results = loop.run_until_complete(chat(Profile + query))
+        selected_scenarios[scenario] = results
+
+    with open('./data/diagsum_generated_scenarios.json', 'w') as f:
+        json.dump(selected_scenarios, f)
+
+
+def check_diagsum_evaluation(max_length=None):
+
+    gpt_filtered = []
+    with open('./data/diagsum_generated_scenarios.json') as f:
+        data = json.load(f)
+
+        for item in data:
+            if data[item] == 'good':
+                gpt_filtered.append(item)
+
+    # save_data(gpt_filtered, 'gpt_filtered_diagsum.txt')
+    # remove those scenarios are too long
+    gpt_filtered_short = [scenario for scenario in gpt_filtered if tokens.gpt_get_estimated_cost(scenario, max_tokens=0)<=max_length]
+
+    # remove those scenarios are not start from Person
+    pattern = re.compile(r'^#Person[0-9]#+')
+    pattern_2 = re.compile(r'#Person[\d]#+')
+    gpt_filtered_final = [scenario for scenario in gpt_filtered_short if pattern.match(scenario) and len(pattern_2.findall(scenario))!=2]
+    save_data(gpt_filtered_final, 'gpt_filtered_diagsum.txt')
+    return data
+
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    tokens = TokenPricer()
+
+    # diagsum_hints(tokens=tokens, logger=logger)
+    check_diagsum_evaluation(max_length=15)
 
     print("done!")
