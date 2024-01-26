@@ -238,6 +238,17 @@ def replace_names():
     return
 
 
+def fix_gpt_gen():
+    data = load_data('gpt_generated_scenario.txt')
+    pattern = re.compile(r'^Scene [0-9]:')
+    pattern_2 = re.compile(r'^\.')
+    printlist = []
+    for scenario in data:
+        tmp = pattern.sub('', scenario.strip())
+        tmp = pattern_2.sub('', tmp)
+        printlist.append(tmp)
+    save_data(printlist, 'gpt_generated_scenario_post.txt')
+    return
 
 
 if __name__ == '__main__':
@@ -245,7 +256,9 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     tokens = TokenPricer()
 
-    gpt_scenarios()
+    # gpt_scenarios()
+    fix_gpt_gen()
+
 
     # diagsum_hints(tokens=tokens, logger=logger)
     # check_diagsum_evaluation(max_length=15)
