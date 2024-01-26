@@ -13,6 +13,7 @@ import asyncio
 import numpy as np
 import json
 import logging
+import io
 from generate_scenario import save_data
 
 def num_tokens_from_string(string, encoding_name):
@@ -59,7 +60,7 @@ def check_scenario(scenario):
 
     return result
 
-def get_hints(tokens, scenarios, num_hints, hint_limit):
+def get_hints(tokens, scenarios, num_hints, hint_limit, back_up_hints = ""):
     shuffled_scenario = random.sample(scenarios, len(scenarios))
     # shuffled_scenario = np.random.shuffle(scenarios)
     hints = []
@@ -68,7 +69,8 @@ def get_hints(tokens, scenarios, num_hints, hint_limit):
             hints.append(scenario)
         if len(hints) == num_hints:
             break
-
+    if len(hints) == 0:
+        hints = back_up_hints
     # length = [tokens.gpt_get_estimated_cost(hint, max_tokens=0) for hint in hints]
     print('the actual hints are {}'.format(len(hints)))
     return hints
@@ -88,60 +90,76 @@ async def chat(Profile_new):
 
 
 def gpt_scenarios():
-    generated_scenarios = []
 
-    example_hints = ['Max is going to perform at a concert.', "John's design is rejected by the magzaine.",
+    example_hints_raw = ['Lucas is going to perform at a concert.', "Samuel's design is rejected by the magzaine.",
                      "Anderson is rejected by his dream school",
-                     'Oliver is admitted to his dream university', 'Tom got promoted at the company.',
-                     'Cynthia did not pass the math exam at the end of last term.']
+                     'Oliver is admitted to his dream university', 'Noah got promoted at the company.',
+                     'Sophia did not pass the math exam at the end of last term.']
+
+    diagsum_hints = load_data('seed_scenario_manual.txt')
+    generated_scenarios = diagsum_hints
+    generated_scenarios += example_hints_raw
 
     num_gen = 40
     target = 5000
     num_hints = 5
     hint_limit = 15
     tokens = TokenPricer()
+    example_hints = ' '.join(example_hints_raw)
+    # path = './data'
+    # filename = os.path.join(path, 'gpt_generated_scenarios_buffer.txt')
+    # files = io.open(filename, 'w')
+    # buffered_writer = io.BufferedWriter(files)
+    with open('./data/gpt_generated_scenarios.txt', 'a', buffering=4096) as f:
+        while len(generated_scenarios) <= target:
 
-    while len(generated_scenarios) <= target:
+            Profile_new = "You are expert Alex. You are supposed to provide several short, diverse, concise and precise script scenes described in one short sentence. " \
+                          "Please make sure the script scence starts from a unique name of the character. Here are some examples of good script scenes for your reference: {} ".format(
+                example_hints) \
+                          + (
+                              " Please generate {} good script scenes using the aforementioned good script scenes as references."
+                              "The outputs should be separated by newline character '\\n'.\n").format(
+                num_gen)
 
-        Profile_new = "You are expert Alex. You are supposed to provide several short, diverse, concise and precise script scenes described in one short sentence. " \
-                      "Please make sure the script scence starts from the name of the character. Here are some examples of good script scenes for your reference: {} ".format(
-            example_hints) \
-                      + (
-                          " Please generate {} good script scenes using the aforementioned good script scenes as references."
-                          "The outputs should be separated by newline character '\\n'.\n").format(
-            num_gen)
+            results = asyncio.run(chat(Profile_new=Profile_new))
 
-        results = asyncio.run(chat(Profile_new=Profile_new))
+            scenarios = results.split('\n')
+            scenarios = [check_scenario(sce) for sce in scenarios if sce != ""]
 
-        scenarios = results.split('\n')
-        scenarios = [check_scenario(sce) for sce in scenarios if sce != ""]
+            if isinstance(scenarios, list):
 
-        if isinstance(scenarios, list):
+                # hints = random.sample(scenarios, num_hints)
+                # hints = np.random.choice(scenarios, size = num_hints, replace=False)
+                if len(scenarios) == num_gen:
+                    hints = get_hints(tokens=tokens, scenarios=scenarios, num_hints=num_hints, hint_limit=hint_limit, back_up_hints=example_hints_raw)
+                else:
+                    print('generation number exception!')
+                    print('num_scenarios', len(scenarios))
 
-            # hints = random.sample(scenarios, num_hints)
-            # hints = np.random.choice(scenarios, size = num_hints, replace=False)
-            if len(scenarios) == num_gen:
+                    hints = get_hints(tokens=tokens, scenarios=scenarios, num_hints=num_hints, hint_limit=hint_limit, back_up_hints=example_hints_raw)
 
-                hints = get_hints(tokens=tokens, scenarios=scenarios, num_hints=num_hints, hint_limit=hint_limit)
             else:
-                print('generation number exception!')
-                print('num_scenarios', len(scenarios))
+                print('instance error, not a list!')
+                continue
 
-                hints = get_hints(tokens=tokens, scenarios=scenarios, num_hints=num_hints, hint_limit=hint_limit)
+            example_hints = ' '.join(hints)
+            generated_scenarios.extend(scenarios)
 
-        else:
-            print('instance error, not a list!')
-            continue
+            f.writelines('\n'.join(scenarios))
+    f.close()
 
-        example_hints = ' '.join(hints)
-        generated_scenarios.extend(scenarios)
+            # buffered_writer.write('\n'.join(scenarios).encode('utf-8'))
+            # buffered_writer.flush()
 
-        # length = [tokens.gpt_get_estimated_cost(i, max_tokens=0) for i in generated_scenarios]
-        # avg_length = sum(length)/80
+            # length = [tokens.gpt_get_estimated_cost(i, max_tokens=0) for i in generated_scenarios]
+            # avg_length = sum(length)/80
 
-    with open('./data/gpt_generated_scenarios.txt', 'w') as f:
-        f.writelines('\n'.join(generated_scenarios))
+        # buffered_writer.close()
+        # files.close()
+    # with open('./data/gpt_generated_scenarios.txt', 'w') as f:
+    #     f.writelines('\n'.join(generated_scenarios))
 
+    return
 
 
 def diagsum_hints(tokens=None, logger=None):
@@ -199,9 +217,26 @@ def check_diagsum_evaluation(max_length=None):
     # remove those scenarios are not start from Person
     pattern = re.compile(r'^#Person[0-9]#+')
     pattern_2 = re.compile(r'#Person[\d]#+')
-    gpt_filtered_final = [scenario for scenario in gpt_filtered_short if pattern.match(scenario) and len(pattern_2.findall(scenario))!=2]
+    # gpt_filtered_final = [scenario for scenario in gpt_filtered_short if pattern.match(scenario) and len(pattern_2.findall(scenario))!=2]
+    gpt_filtered_final = [scenario for scenario in gpt_filtered_short if pattern.match(scenario)]
     save_data(gpt_filtered_final, 'gpt_filtered_diagsum.txt')
     return data
+
+
+def replace_names():
+    names = ['Benjamin','Emily','Alexander','Olivia', 'Liam','Sophia','Ethan','Ava', 'Noah','Mia','Jacob','Grace','Lucas','Lily','Carter','Chloe','Aiden','Scarlett','Samuel','Abigail']
+    data = load_data('gpt_filtered_diagsum_manual.txt')
+    pattern = re.compile(r'^#Person[0-9]#+')
+    printlist = []
+    for seed in data:
+        name = random.choice(names)
+        tmp = pattern.sub(name, seed)
+        printlist.append(tmp)
+
+    save_data(printlist, 'seed_scenario_manual.txt')
+
+    return
+
 
 
 
@@ -210,7 +245,9 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     tokens = TokenPricer()
 
+    gpt_scenarios()
+
     # diagsum_hints(tokens=tokens, logger=logger)
-    check_diagsum_evaluation(max_length=15)
+    # check_diagsum_evaluation(max_length=15)
 
     print("done!")
