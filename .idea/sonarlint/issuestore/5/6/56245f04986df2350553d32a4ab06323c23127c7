@@ -1,0 +1,26 @@
+
+Bpython:S125"Remove this commented out code.(«Ìõ·úÿÿÿÿ8‘´ÃÒÔ1
+Bpython:S125"Remove this commented out code.(ñúªÿÿÿÿÿ8‘´ÃÒÔ1
+Zpython:S63539";Use concise character class syntax '\d' instead of '[0-9]'.(Ä‡¯ÿ8‘´ÃÒÔ1
+Bpython:S125A"Remove this commented out code.(´õé©ıÿÿÿÿ8‘´ÃÒÔ1
+=python:S125J"Remove this commented out code.(âî ğ8‘´ÃÒÔ1
+zpython:S117O"WRename this parameter "Profile_new" to match the regular expression ^[_a-z][a-z0-9_]*$.(Î¦ÿôùÿÿÿÿ8‘´ÃÒÔ1
+=python:S3626¢"Remove this redundant return.(ÙãŞŸ8‘´ÃÒÔ1
+python:S117t"\Rename this local variable "Profile_new" to match the regular expression ^[_a-z][a-z0-9_]*$.(§«¸õúÿÿÿÿ8‘´ÃÒÔ1
+Bpython:S125m"Remove this commented out code.(Üì§Äıÿÿÿÿ8‘´ÃÒÔ1
+>python:S125ƒ"Remove this commented out code.(Ï£â¦8‘´ÃÒÔ1
+Cpython:S125—"Remove this commented out code.(µ“ÖÚıÿÿÿÿ8‘´ÃÒÔ1
+Cpython:S125š"Remove this commented out code.(ÌÓÔ©úÿÿÿÿ8‘´ÃÒÔ1
+>python:S125"Remove this commented out code.(Â—Ëß8‘´ÃÒÔ1
+|python:S117¯"XRename this local variable "Profile" to match the regular expression ^[_a-z][a-z0-9_]*$.(À¶ôÆüÿÿÿÿ8‘´ÃÒÔ1
+Cpython:S125¿"Remove this commented out code.(¾è–Àùÿÿÿÿ8‘´ÃÒÔ1
+Cpython:S125Â"Remove this commented out code.(¾è–Àùÿÿÿÿ8‘´ÃÒÔ1
+Lpython:S1481Û"-Remove the unused local variable "pattern_2".(µßûc8‘´ÃÒÔ1
+[python:S6353Ú";Use concise character class syntax '\d' instead of '[0-9]'.(÷·œ–8‘´ÃÒÔ1
+Cpython:S125Ü"Remove this commented out code.(òÀ¬–ÿÿÿÿÿ8‘´ÃÒÔ1
+=python:S3626î"Remove this redundant return.(ÙãŞŸ8‘´ÃÒÔ1
+[python:S6353å";Use concise character class syntax '\d' instead of '[0-9]'.(÷·œ–8‘´ÃÒÔ1
+=python:S3626…"Remove this redundant return.(ÙãŞŸ8’´ÃÒÔ1
+Zpython:S6353ó";Use concise character class syntax '\d' instead of '[0-9]'.(ÎÎ’8’´ÃÒÔ1
+>python:S125ö"Remove this commented out code.(ì°¯Î8’´ÃÒÔ1
+>python:S125‘"Remove this commented out code.(Œæ±«8’´ÃÒÔ1
