@@ -8,8 +8,13 @@ import os
 import torch
 import torch.nn.functional as F
 
-from openai import OpenAI
-client = OpenAI(api_key='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')
+from openai import OpenAI, AsyncOpenAI
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+# client = AsyncOpenAI(
+#     # This is the default and can be omitted
+#     api_key=os.environ.get("OPENAI_API_KEY"),
+# )
 
 def get_embedding(text, model="text-embedding-ada-002"):
    text = text.replace("\n", " ")
@@ -43,6 +48,7 @@ def Embedding_request(text, model):
     temp_sleep()
     try:
         completion = client.embeddings.create(input=[text], model=model)
+
         return completion.data[0].embedding
 
     except:
@@ -125,7 +131,7 @@ def calculate_similarity_matrix(embeddings):
 
     # Convert the PyTorch tensor to a NumPy array
     similarity_matrix_np = similarity_matrix.cpu().numpy()
-    np.save('./data/ada_similarity.npy', similarity_matrix_np)
+    np.save('./data/gpt_similarity.npy', similarity_matrix_np)
     return similarity_matrix_np
 
 
@@ -181,13 +187,24 @@ if __name__ == "__main__":
    # df['ada_embedding'] = df.sentence.apply(lambda x: safe_embedding_response(x, model='text-embedding-ada-002'))
    # df.to_csv('data/ada_embedding.csv', index=False)
 
-   embeddings = load_csv('./data/ada_embedding.csv')
-   # res = compute_similarity(embeddings)
-   # res = calculate_similarity_matrix(embeddings)
-   calculate_similarity_mistral(embeddings)
-   #
-   print('done!')
+   # embeddings = load_csv('./data/ada_embedding.csv')
+   # # res = compute_similarity(embeddings)
+   # # res = calculate_similarity_matrix(embeddings)
+   # calculate_similarity_mistral(embeddings)
 
    # data = process_nan('./data/ada_embedding.csv')
    # res = check_data('sce_topic_filtered.txt')
+   # print('done!')
+
+
+
+    # gpt generated scenario processing
+   # data = load_data('gpt_generated_scenario_post.txt')
+   # df = pd.DataFrame(data, columns=['sentence'])
+   # df['ada_embedding'] = df.sentence.apply(lambda x: safe_embedding_response(x, model='text-embedding-ada-002'))
+   # df.to_csv('data/gpt_scenario_embedding.csv', index=False)
+   # print('done!')
+
+   embeddings = load_csv('./data/gpt_scenario_embedding.csv')
+   calculate_similarity_matrix(embeddings)
    print('done!')

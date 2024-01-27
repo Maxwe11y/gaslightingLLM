@@ -242,11 +242,21 @@ def fix_gpt_gen():
     data = load_data('gpt_generated_scenario.txt')
     pattern = re.compile(r'^Scene [0-9]:')
     pattern_2 = re.compile(r'^\.')
+
+    # pattern_3 = re.compile(r'(?<=[a-z]\.)[a-zA-Z]')
+    # for idx, scenario in enumerate(data):
+    #     if pattern_3.search(scenario):
+    #         print(idx, scenario)
+
+
     printlist = []
     for scenario in data:
         tmp = pattern.sub('', scenario.strip())
         tmp = pattern_2.sub('', tmp)
-        printlist.append(tmp)
+        num_tokens = tokens.gpt_get_estimated_cost(tmp, max_tokens=0)
+        if num_tokens <= 18:
+            printlist.append(tmp)
+
     save_data(printlist, 'gpt_generated_scenario_post.txt')
     return
 
