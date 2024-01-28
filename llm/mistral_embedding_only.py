@@ -57,14 +57,14 @@ def similarity_metrics(data, pipe=None, batch=1):
 
     # df = pd.DataFrame([embeddings_1, embeddings_2], columns=['line1', 'line2'])
     # df.to_csv('data/mistral_embedding.csv', index=False)
-    torch.save(embeddings_1, './data/line_1.pth')
-    torch.save(embeddings_2, './data/line_2.pth')
+    torch.save(embeddings_1, './data/gpt_line_1.pth')
+    torch.save(embeddings_2, './data/gpt_line_2.pth')
 
     return None
 
 
 if __name__ == "__main__":
-    data = load_data('sce_topic_filtered.txt')
+    data = load_data('gpt_generated_scenario_post.txt')
     # data = data[0:10]
     tokenizer = AutoTokenizer.from_pretrained('intfloat/e5-mistral-7b-instruct', padding_side='left')
     PIPELINE_REGISTRY.register_pipeline(
@@ -77,4 +77,4 @@ if __name__ == "__main__":
 
     pipe = pipeline("text-similarity", model=model, tokenizer=tokenizer, device_map='auto', trust_remote_code=True)
 
-    similarity_metrics = similarity_metrics(data, pipe=pipe, batch=512) # 1024, 5
+    sim_metrics = similarity_metrics(data, pipe=pipe, batch=512) # 1024, 5

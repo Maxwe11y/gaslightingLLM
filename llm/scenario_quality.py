@@ -42,7 +42,7 @@ def number_to_ordinal_words(number):
     else:
         return ''
 
-def load_data(filename, path="./data/"):
+def load_data(filename, path=r"./data/"):
     data = []
     with open(os.path.join(path, filename), "r") as f:
         lines = f.readlines()
@@ -239,25 +239,16 @@ def replace_names():
 
 
 def fix_gpt_gen():
-    data = load_data('gpt_generated_scenario.txt')
-    pattern = re.compile(r'^Scene [0-9]:')
-    pattern_2 = re.compile(r'^\.')
-
-    # pattern_3 = re.compile(r'(?<=[a-z]\.)[a-zA-Z]')
-    # for idx, scenario in enumerate(data):
-    #     if pattern_3.search(scenario):
-    #         print(idx, scenario)
-
-
+    data = load_data('gpt_scenario_mistral_final.txt')
+    pattern = re.compile(r'^Scene [\d]+:')
+    pattern_2 = re.compile(r'^\.|^ ')
     printlist = []
     for scenario in data:
+        scenario = scenario.strip()
         tmp = pattern.sub('', scenario.strip())
         tmp = pattern_2.sub('', tmp)
-        num_tokens = tokens.gpt_get_estimated_cost(tmp, max_tokens=0)
-        if num_tokens <= 18:
-            printlist.append(tmp)
-
-    save_data(printlist, 'gpt_generated_scenario_post.txt')
+        printlist.append(tmp)
+    save_data(printlist, 'gpt_scenario_mistral_final_x.txt')
     return
 
 

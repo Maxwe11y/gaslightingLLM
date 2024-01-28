@@ -135,7 +135,6 @@ def calculate_similarity_matrix(embeddings):
     return similarity_matrix_np
 
 
-
 def calculate_similarity_mistral(embeddings):
     """
     Calculate cosine similarity matrix for a list of embeddings using PyTorch.
