@@ -65,13 +65,24 @@ def load_csv(filename):
     return all_embeddings
 
 if __name__ == "__main__":
-    metrics = np.load('./data/ada_similarity.npy')
+    # metrics = np.load('./data/ada_similarity.npy')
+    # selected_points = max_min_diversity(metrics, k=2000)
+    #
+    # scenarios = load_data('sce_topic_filtered.txt')
+    # selected_scenarios = [scenarios[selected] for selected in selected_points]
+    # save_data(selected_scenarios, './sce_topic_final.txt')
+    # selected_points_ = np.array(selected_points)
+    # np.save('./data/sec_topic_final_index.npy', selected_points_)
+    # print('done!')
+
+    # gpt version
+    metrics = np.load('./data/gpt_similarity.npy')
     selected_points = max_min_diversity(metrics, k=2000)
 
-    scenarios = load_data('sce_topic_filtered.txt')
+    scenarios = load_data('gpt_generated_scenario_post.txt')
     selected_scenarios = [scenarios[selected] for selected in selected_points]
-    save_data(selected_scenarios, './sce_topic_final.txt')
+    save_data(selected_scenarios, './gpt_final.txt')
     selected_points_ = np.array(selected_points)
-    np.save('./data/sec_topic_final_index.npy', selected_points_)
+    np.save('./data/gpt_final_index.npy', selected_points_)
     print('done!')
 
