@@ -239,7 +239,7 @@ def replace_names():
 
 
 def fix_gpt_gen():
-    data = load_data('gpt_final.txt')
+    data = load_data('gpt_final_x.txt')
     pattern = re.compile(r'^Scene [\d]+:')
     pattern_2 = re.compile(r'^\.|^ ')
     printlist = []
