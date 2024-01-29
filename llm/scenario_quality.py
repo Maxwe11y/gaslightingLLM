@@ -239,7 +239,7 @@ def replace_names():
 
 
 def fix_gpt_gen():
-    data = load_data('gpt_scenario_mistral_final.txt')
+    data = load_data('gpt_final.txt')
     pattern = re.compile(r'^Scene [\d]+:')
     pattern_2 = re.compile(r'^\.|^ ')
     printlist = []
@@ -248,7 +248,7 @@ def fix_gpt_gen():
         tmp = pattern.sub('', scenario.strip())
         tmp = pattern_2.sub('', tmp)
         printlist.append(tmp)
-    save_data(printlist, 'gpt_scenario_mistral_final_x.txt')
+    save_data(printlist, 'gpt_final_x.txt')
     return
 
 
