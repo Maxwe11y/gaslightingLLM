@@ -11,6 +11,13 @@ from transformers import BitsAndBytesConfig
 import torch
 from mistral_embedding_only import similarity_metrics
 import numpy as np
+from openai import AsyncOpenAI
+import asyncio
+
+client = AsyncOpenAI(
+    # This is the default and can be omitted
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
 
 bnb_config = BitsAndBytesConfig(
     load_in_8bit=True,
@@ -77,10 +84,10 @@ def compute_similarity(embedding_persona, embedding_scene):
     length_per = len(embedding_persona)
     length_scene = len(embedding_scene)
     similarity_metrics = np.zeros((length_scene, length_per))
-    for idx, embed_p in enumerate(embedding_scene):
-        for idj, embed_s in enumerate(embedding_persona):
+    for idx, embed_s in enumerate(embedding_scene):
+        embed_s = np.array(eval(embed_s))
+        for idj, embed_p in enumerate(embedding_persona):
             embed_p = np.array(eval(embed_p))
-            embed_s = np.array(eval(embed_s))
             cos_sim = embed_s.dot(embed_p) / (np.linalg.norm(embed_s) * np.linalg.norm(embed_p))
             similarity_metrics[idx][idj] = cos_sim
 
@@ -92,12 +99,70 @@ def load_csv(filename, column_name = ''):
     embeddings = data[column_name]
     return embeddings
 
+async def chat(Profile_new):
+    chat_completion = await client.chat.completions.create(
+        messages=[
+            {
+                "role": "system",
+                "content": Profile_new,
+            }
+        ],
+        model="gpt-3.5-turbo",
+    )
+    return chat_completion.choices[0].message.content
+
+
+def check_conflict(scene, persona):
+    prompt = "You are a specialist tasked with scrutinizing and verifying whether there are factual discrepancies between two portrayals of an individual." \
+              + "For example, the statements 'Alex is going to pick up his children.' and 'Alex does not have any children.' present a contradiction regarding the factual assertion of whether Alex has children." \
+              + "Given the two descriptions below, kindly indicate 'yes' if there are factual inconsistencies, and 'no' if there are none. if yes, please give elaborations.\n" \
+              + "portrayal one {}".format(scene) \
+              + "\n portrayal two {}".format(persona)
+
+
+    loop = asyncio.get_event_loop()
+    result = loop.run_until_complete(chat(prompt))
+
+    while result.lower() not in ['yes', 'no']:
+        result = loop.run_until_complete(chat(prompt))
+
+    return result
+
 
 if __name__ == "__main__":
-    get_ada_embedding()
-
-    # embedding_persona = load_csv('./embedding/ada_persona_embedding.csv', column_name = 'personas')
-    # embeddings_scene = load_csv('./embedding/ada_scene_embedding.csv', column_name = 'scenes')
+    # get_ada_embedding()
+    # compute the similarity matrix between scenes and personas
+    # embedding_persona = load_csv('./embedding/ada_persona_embedding.csv', column_name='ada_embedding_per')
+    # embeddings_scene = load_csv('./embedding/ada_scene_embedding.csv', column_name='ada_embedding_sce')
     # compute_similarity(embedding_persona, embeddings_scene)
+
+
+    # utilize the similarity matrix to match scenario with the most relevant persona
+    matched_sce_per = {}
+    personas = load_persona('persona.json')
+    scenes = load_scenes('gpt_final_x.txt')
+    df_per = pd.DataFrame(personas, columns=['personas'])
+    df_sce = pd.DataFrame(scenes, columns=['scenes'])
+
+    metrics = np.load('./embedding/sce_per_similarity.npy')
+    k=3
+    for idx, sim in enumerate(metrics):
+        # selected = torch.argmax(torch.tensor(metrics[idx]))
+        selected_personas = torch.topk(torch.tensor(metrics[idx]), k=k)
+        for ind in range(k):
+            persona_ind = selected_personas[1][ind].item()
+            persona = df_per['personas'][persona_ind]
+
+            scene = df_sce['scenes'][idx]
+            if check_conflict(scene, persona) != 'no':
+                continue
+            else:
+                matched_sce_per[scene] = persona.split("  ")
+    print('done!')
+
+    with open('./embedding/match_sce_per.json', 'w') as f:
+        json.dump(matched_sce_per, f)
+    f.close()
+
 
     print('done!')

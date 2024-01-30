@@ -76,12 +76,12 @@ def get_hints(tokens, scenarios, num_hints, hint_limit, back_up_hints = ""):
     return hints
 
 
-async def chat(Profile_new):
+async def chat(prompt):
     chat_completion = await client.chat.completions.create(
         messages=[
             {
                 "role": "system",
-                "content": Profile_new,
+                "content": prompt,
             }
         ],
         model="gpt-3.5-turbo",
