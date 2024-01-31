@@ -123,7 +123,8 @@ def check_conflict(scene, persona):
                   + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether Alex has children. " \
                                               "In the premise, Alex is supposed to have children as he need to pick up his children." \
                                               "However, the hypothesis is an assertion that Alex does not have any children. Hence, The hypothesis contradicted the premise." \
-                                                "Assume that you’re an expert working on natural language inference tasks. \nGiven a Premise and Hypothesis below, please follow the reasoning steps in the above example to determine the relationship between " \
+                                                "Assume that you’re an expert working on natural language inference tasks. \nGiven a Premise and Hypothesis below, " \
+                                                 "please follow the reasoning steps in the above example to determine the relationship between " \
                                                  "premise and hypothesis from three predefined labels, i.e., entailment, contradiction, and undetermined" \
                                                 "\nPremise: {}".format(scene) \
                                             + "Hypothesis: {}".format(persona) \
@@ -161,7 +162,7 @@ if __name__ == "__main__":
     metrics_per2_sce1 = np.load('./embedding/mistral_similarity_per2_sce1.npy')
     metrics = (metrics_per2_sce1+metrics_per2_sce1)/2.0
     k=3
-    for idx, sim in enumerate(metrics):
+    for idx, sim in enumerate(metrics[0:20]):
         # selected = torch.argmax(torch.tensor(metrics[idx]))
         selected_personas = torch.topk(torch.tensor(metrics[idx]), k=k)
         for ind in range(k):
