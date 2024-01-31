@@ -76,12 +76,12 @@ def get_hints(tokens, scenarios, num_hints, hint_limit, back_up_hints = ""):
     return hints
 
 
-async def chat(Profile_new):
+async def chat(prompt):
     chat_completion = await client.chat.completions.create(
         messages=[
             {
                 "role": "system",
-                "content": Profile_new,
+                "content": prompt,
             }
         ],
         model="gpt-3.5-turbo",
@@ -239,7 +239,7 @@ def replace_names():
 
 
 def fix_gpt_gen():
-    data = load_data('gpt_scenario_mistral_final.txt')
+    data = load_data('gpt_final_x.txt')
     pattern = re.compile(r'^Scene [\d]+:')
     pattern_2 = re.compile(r'^\.|^ ')
     printlist = []
@@ -248,7 +248,7 @@ def fix_gpt_gen():
         tmp = pattern.sub('', scenario.strip())
         tmp = pattern_2.sub('', tmp)
         printlist.append(tmp)
-    save_data(printlist, 'gpt_scenario_mistral_final_x.txt')
+    save_data(printlist, 'gpt_final_x.txt')
     return
 
 

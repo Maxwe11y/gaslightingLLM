@@ -2,7 +2,10 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="monkey310" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="monkey38" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="ddba497d-b782-4855-9c33-c3799a8d011a" />
   </component>
 </module>

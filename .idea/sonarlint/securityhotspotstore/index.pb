@@ -25,3 +25,13 @@ Q.idea/sonarlint/securityhotspotstore/c/e/cee6980cf22b391f3037dee233e6e5d8b99ff8
 -.idea/sonarlint/securityhotspotstore/index.pb,8\8\88a9255124c95bdc913197c120a8d560edc59c8e
 w
 G.idea/sonarlint/issuestore/f/a/faa40282a6c84704e37865635c910f80f9d78a2d,7\b\7b035ff6b64539a133e9720c34080c98ce2c9ed8
+J
+llm/match_persona_scene.py,5\a\5a777b918a40ef1030f63f8d0d466854b638fe76
+Y
+)llm/data/gpt_scenario_mistral_final_x.txt,3\9\393b9d59c43d153a63202310895b9a87b2723afd
+H
+llm/data/gpt_final_x.txt,d\e\de65b7eae6d361a0609f533139f5d314317f0671
+^
+.llm/embedding/mistral_similarity_per2_sce1.npy,7\5\75fb6c0d63490c05941ebf1be7604a1a469bfe33
+^
+.llm/embedding/mistral_similarity_per1_sce2.npy,2\a\2a73d13c519256b78d17372751a434cdbc66d2cd

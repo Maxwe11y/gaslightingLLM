@@ -10,6 +10,7 @@ from get_mistral_embedding import get_detailed_instruct, load_data
 from transformers import BitsAndBytesConfig
 import torch
 import pandas as pd
+import os
 
 bnb_config = BitsAndBytesConfig(
     load_in_8bit=True,
@@ -37,7 +38,7 @@ def compute_similarity(line1=None, pipe=None):
 
     return outputs_1[0], outputs_2[0]
 
-def similarity_metrics(data, pipe=None, batch=1):
+def similarity_metrics(data, pipe=None, batch=1, path='./data', save_name1= '', save_name2= ''):
 
     embeddings_1 = []
     embeddings_2 = []
@@ -57,8 +58,10 @@ def similarity_metrics(data, pipe=None, batch=1):
 
     # df = pd.DataFrame([embeddings_1, embeddings_2], columns=['line1', 'line2'])
     # df.to_csv('data/mistral_embedding.csv', index=False)
-    torch.save(embeddings_1, './data/gpt_line_1.pth')
-    torch.save(embeddings_2, './data/gpt_line_2.pth')
+    # torch.save(embeddings_1, './data/gpt_line_1.pth')
+    # torch.save(embeddings_2, './data/gpt_line_2.pth')
+    torch.save(embeddings_1, os.path.join(path, save_name1))
+    torch.save(embeddings_2, os.path.join(path, save_name2))
 
     return None
 

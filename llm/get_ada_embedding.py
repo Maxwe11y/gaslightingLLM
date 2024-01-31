@@ -135,7 +135,7 @@ def calculate_similarity_matrix(embeddings):
     return similarity_matrix_np
 
 
-def calculate_similarity_mistral(embeddings):
+def calculate_similarity_mistral(embeddings=None):
     """
     Calculate cosine similarity matrix for a list of embeddings using PyTorch.
 
@@ -146,8 +146,8 @@ def calculate_similarity_mistral(embeddings):
     - similarity_matrix: Cosine similarity matrix.
     """
     # Convert the list of embeddings to a PyTorch tensor
-    embeddings_1 = torch.load('./data/line_1.pth')
-    embeddings_2 = torch.load('./data/line_2.pth')
+    embeddings_1 = torch.load('./embedding/mistral_embedding_persona_1.pth')
+    embeddings_2 = torch.load('./embedding/mistral_embedding_scene_2.pth')
 
     # embeddings_tensor = torch.tensor(embeddings_, dtype=torch.float32)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -158,11 +158,11 @@ def calculate_similarity_mistral(embeddings):
     # normalized_embeddings = F.normalize(embeddings_tensor, p=2, dim=1)
 
     # Calculate cosine similarity matrix
-    similarity_matrix = torch.mm(embeddings_1, embeddings_2.t())
+    similarity_matrix = torch.mm(embeddings_2, embeddings_1.t())
 
     # Convert the PyTorch tensor to a NumPy array
     similarity_matrix_np = similarity_matrix.cpu().numpy()
-    np.save('./data/mistral_similarity.npy', similarity_matrix_np)
+    np.save('./embedding/mistral_similarity_per1_sce2.npy', similarity_matrix_np)
     return similarity_matrix_np
 
 
@@ -189,7 +189,7 @@ if __name__ == "__main__":
    # embeddings = load_csv('./data/ada_embedding.csv')
    # # res = compute_similarity(embeddings)
    # # res = calculate_similarity_matrix(embeddings)
-   # calculate_similarity_mistral(embeddings)
+   # calculate_similarity_mistral()
 
    # data = process_nan('./data/ada_embedding.csv')
    # res = check_data('sce_topic_filtered.txt')
