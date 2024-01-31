@@ -119,14 +119,24 @@ def check_conflict(scene, persona):
               + "portrayal one {}".format(scene) \
               + "\n portrayal two {}".format(persona)
 
+    prompt_NLI = "Task Description: \n" + "Premise: Alex is going to pick up his children." + "\nHypothesis: Alex does not have any children." \
+                  + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether Alex has children. " \
+                                              "In the premise, Alex is supposed to have children as he need to pick up his children." \
+                                              "However, the hypothesis is an assertion that Alex does not have any children. Hence, The hypothesis contradicted the premise." \
+                                                "Assume that you’re an expert working on natural language inference tasks. \nGiven a Premise and Hypothesis below, please follow the reasoning steps in the above example to determine the relationship between " \
+                                                 "premise and hypothesis from three predefined labels, i.e., entailment, contradiction, and undetermined" \
+                                                "\nPremise: {}".format(scene) \
+                                            + "Hypothesis: {}".format(persona) \
+                                            + "\nThe label is: \n"
+
 
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(chat(prompt))
+    result = loop.run_until_complete(chat(prompt_NLI))
 
-    while result.lower() not in ['yes', 'no']:
+    while result.lower() not in ['entailment', 'contradiction', 'undetermined']:
         result = loop.run_until_complete(chat(prompt))
 
-    return result
+    return result.lower()
 
 
 if __name__ == "__main__":
@@ -140,11 +150,16 @@ if __name__ == "__main__":
     # utilize the similarity matrix to match scenario with the most relevant persona
     matched_sce_per = {}
     personas = load_persona('persona.json')
-    scenes = load_scenes('gpt_final_x.txt')
+    # scenes = load_scenes('gpt_final_x.txt')
+    # use mistral embedding instead of ada embedding
+    scenes = load_scenes('gpt_scenario_mistral_final_x.txt')
     df_per = pd.DataFrame(personas, columns=['personas'])
     df_sce = pd.DataFrame(scenes, columns=['scenes'])
 
-    metrics = np.load('./embedding/sce_per_similarity.npy')
+    # metrics = np.load('./embedding/sce_per_similarity.npy')
+    metrics_per1_sce2 = np.load('./embedding/mistral_similarity_per1_sce2.npy')
+    metrics_per2_sce1 = np.load('./embedding/mistral_similarity_per2_sce1.npy')
+    metrics = (metrics_per2_sce1+metrics_per2_sce1)/2.0
     k=3
     for idx, sim in enumerate(metrics):
         # selected = torch.argmax(torch.tensor(metrics[idx]))
@@ -154,15 +169,17 @@ if __name__ == "__main__":
             persona = df_per['personas'][persona_ind]
 
             scene = df_sce['scenes'][idx]
-            if check_conflict(scene, persona) != 'no':
+            if check_conflict(scene, persona) == 'contradiction':
+                print('scene', scene)
+                print('persona', persona)
                 continue
             else:
                 matched_sce_per[scene] = persona.split("  ")
+                break
     print('done!')
 
     with open('./embedding/match_sce_per.json', 'w') as f:
         json.dump(matched_sce_per, f)
     f.close()
-
 
     print('done!')
