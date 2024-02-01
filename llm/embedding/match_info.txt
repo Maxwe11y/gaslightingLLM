@@ -1,0 +1,197 @@
+C:\Users\lw081\anaconda3\envs\monkey38\python.exe -X pycache_prefix=C:\Users\lw081\AppData\Local\JetBrains\PyCharm2023.3\cpython-cache "D:/Pycharm/PyCharm 2023.1.2/plugins/python/helpers/pydev/pydevd.py" --multiprocess --qt-support=auto --client 127.0.0.1 --port 11162 --file F:\git_projects\gaslightingLLM\llm\match_persona_scene.py 
+Connected to pydev debugger (build 233.13135.95)
+match...: 54it [00:57,  1.71it/s]idx 54
+ind 0
+scene Michael is heartbroken when he receives news of his grandmother's passing.
+
+persona I'm trying to figure out how to cope with my breakup.  it is my universe , and everyone else is just a character in it.  I keep the memory of my grandparents alive by telling stories about them to my children.  i see a therapist that does not really understand me.  i am a father.
+
+
+idx 54
+ind 1
+scene Michael is heartbroken when he receives news of his grandmother's passing.
+
+persona I lost my dog, and it still hurts to think about him.  i believe in fairytales.  i have a master s degree.  I want to wear my favorite dress and boots while watching Friends.  I spend time with my family and try to remember all the good times we've had.
+
+
+match...: 104it [01:27,  1.65it/s]idx 104
+ind 0
+scene Chloe finds out that she is pregnant with twins.
+
+persona I try to live my life as normal as possible, but I have to be more careful now that I'm carrying twins.  I play the guitar to accompany my singing.  I love getting my favorite coffee from Starbucks after a long day at the lab.  i watch jimmy fallon s show every night.  I have no use for a crib, but I would love to have a music studio in my dorm room.
+
+
+match...: 172it [02:08,  1.50it/s]idx 172
+ind 0
+scene Isabella is shocked when she finds out that her best friend has been spreading rumors about her.
+
+persona I learned that my best friend was lying to me about everything.  my hair is very long.  i go to a private high school.  my mother is a librarian.  i play drums in a band.
+
+
+match...: 207it [02:30,  1.82it/s]idx 207
+ind 0
+scene Elizabeth starts a foundation to support arts education in underserved schools.
+
+persona I'm proud that I'm able to use my creative talents to make clay sculptures that help raise awareness about animal welfare issues.  My job at the gas station is going well, but I'm having trouble keeping up with my schoolwork.  I want to show my music to the world!  i sometimes wonder why i am not married.  I will tell my kids about my experience and inspire them to overcome their fears.
+
+
+match...: 244it [02:53,  1.49it/s]idx 244
+ind 0
+scene Oliver designs a self-driving car that eliminates the need for human drivers.
+
+persona I'm still trying to figure out if my car is sentient or not.  I wake up to the sound of my children's laughter.  I'm not afraid to break the rules and do things my own way.  I get to drive around all day while listening to my favorite country music.  I am of Irish descent, and country music reminds me of my childhood.
+
+
+match...: 254it [03:01,  1.45it/s]idx 254
+ind 0
+scene Samuel is diagnosed with a life-threatening illness.
+
+persona I'm afraid to come out to my family.  I've managed to manage my diabetes well enough to become a bartender.  I spend time with my dogs, which helps me feel better.  my name is arnold.  I'm not sure if I'll ever know my ethnic background, but I'm happy with the family I've found.
+
+
+match...: 270it [03:11,  1.68it/s]idx 270
+ind 0
+scene James opens a comic book store, catering to fans of all ages and genres.
+
+persona I love being able to use my music to help children in need.  I am a twenty five year old comic book collector.  I've been working at my parents' business since I was a kid, so I've got a lot of experience in the field.  i play the bass guitar.  i m not a nice person.
+
+
+match...: 349it [03:58,  1.65it/s]idx 349
+ind 0
+scene Charlotte conducts a cooking class for kids, teaching them how to make healthy snacks.
+
+persona I'm a teacher and I'm looking for a way to satisfy my hunger so that I can continue teaching my students.  I now enjoy gardening and cooking with my favorite ingredients.  i work as a personal trainer , 5 days a week.  I like to share my time and company with others.  I don't have any kids, but I'm close to my family.
+
+
+match...: 567it [17:05,  1.81it/s]idx 567
+ind 0
+scene Benjamin starts a fitness journey and learns different workout routines.
+
+persona I work out at home so I can listen to my favorite music while I get in shape.  i occasionally go for walks down by the park.  I'm trying to get back on track with my life.  i hope to keep improving and go big with this sport.  I love to lift weights and enjoy simpler things in life.
+
+
+match...: 568it [17:06,  1.41it/s]idx 568
+ind 0
+scene Lily is starting a blog about her experience as a new mom.
+
+persona I started a blog where I share my thoughts and feelings on topics I am passionate about.  I am getting used to my new beard  i lived most of my life not knowing who bob marley was.  my mother met elvis.  i like to paddle board.
+
+
+match...: 589it [17:19,  1.73it/s]idx 589
+ind 0
+scene Anderson is going to apologize to his sister for an argument they had.
+
+persona I was honored to be able to donate blood in honor of my late sister.  i wait tables.  i graduated college a few years ago.  I'm passionate about the power of family to overcome adversity.  i love my parrot , todd.
+
+
+match...: 591it [17:21,  1.40it/s]idx 591
+ind 0
+scene Jackson joins a cycling club and trains for a long-distance race.
+
+persona My family are avid cyclists as well  I'm a farmer who likes to pickle eggs and horseback ride in my spare time.  I'm not sure of my current weight, but I'm working on it.  I enjoy long drives in the countryside and sometimes I spot my neighbour's pool boy.  I ride my bicycle every day to keep fit and to clear my head so I can focus on my writing.
+
+
+match...: 623it [17:39,  2.00it/s]idx 623
+ind 0
+scene James wins a cooking competition and opens his own restaurant.
+
+persona I once chased a Komodo dragon for 3 hours on a remote island.  I would love to have lunch with my sponsor, who has helped me so much on my journey of recovery.  I'm happy with my weight and would love to have lunch with Quentin Tarantino.  i have 4 children.  I moved to Los Angeles from Tokyo and my brothers helped me a lot, so I am making lunch for them to show my appreciation.
+
+
+match...: 724it [18:40,  1.77it/s]idx 724
+ind 0
+scene Lucas is overwhelmed when he has to take care of his younger siblings for the weekend.
+
+persona I make sure my kids are taken care of before I spend time doing what I enjoy.  i love all of my beautiful children.  I've started to write short stories in my spare time.  i have a little sister.  I take care of myself physically and mentally.
+
+
+match...: 811it [19:30,  2.10it/s]idx 811
+ind 0
+scene Anderson is writing a screenplay.
+
+persona I write poems about my life and my culture.  I like to read the news and write my own stories.  I'm working on finding a new job and trying to figure out what I want to do with my life.  i don t like feeling obligated to hang out with someone.  i am a writer.
+
+
+match...: 960it [20:55,  1.65it/s]idx 960
+ind 0
+scene Alex is learning to write poetry with her poetry teacher in a cozy cafe.
+
+persona I work as a chef and love to come up with creative ways to use kale in my dishes.  My students are my favorite people because they make me laugh and smile every day.  I enjoy writing poetry to express my emotions and cope with the challenges I've faced.  i have only one child.  i am in between classes.
+
+
+match...: 1000it [21:17,  1.70it/s]idx 1000
+ind 0
+scene Anderson is devastated when he is injured and can no longer participate in his favorite sport.
+
+persona I tore my ACL while racing go carts and couldn't race for the rest of the season.  I spend my days working on custom upholstery projects, coming up with new designs for my clothes, and playing board games with friends.  I love that I get to be around my pets all day.  i sell real estate and wait tables on the weekends.  i do not have children.
+
+
+match...: 1180it [23:05,  1.64it/s]idx 1180
+ind 0
+scene Mia is writing a poem about her favorite season.
+
+persona I'm not even thinking about the weather.  My parents are very supportive of my art, even though they don't understand it.  summer is my favorite season.  i love to knit and crochet.  my favorite book is anne of green gables.
+
+
+match...: 1237it [23:39,  1.75it/s]idx 1237
+ind 0
+scene Lucas is going on a solo road trip to explore new places.
+
+persona I'm a proud dog dad to my two puppies.  i live in nashville.  i always travel alone.  My job is to explore the world and share my adventures with others.  My wife is a stay-at-home mom and my kids are all in school.
+
+
+match...: 1308it [24:20,  1.93it/s]idx 1308
+ind 0
+scene Jonathan volunteers at a refugee camp and helps provide basic necessities to those in need.
+
+persona I do my laundry on a weekly basis.  I used to wear tight clothes, but now I prefer more comfortable options.  i like to play outside.  My family is not very wealthy, but we do what we can to help those in need.  I'm trying to make up for my past mistakes by using my engineering skills to help make the world a better place.
+
+
+match...: 1525it [26:29,  1.66it/s]idx 1525
+ind 0
+scene Paul is starting a cooking blog to share his favorite recipes.
+
+persona I started a blog where I share my thoughts and feelings on topics I am passionate about.  I am getting used to my new beard  i lived most of my life not knowing who bob marley was.  my mother met elvis.  i like to paddle board.
+
+
+match...: 1621it [27:25,  1.67it/s]idx 1621
+ind 0
+scene Charlotte starts a blog about healthy eating and gains a large following.
+
+persona I started a blog where I share my thoughts and feelings on topics I am passionate about.  I am getting used to my new beard  i lived most of my life not knowing who bob marley was.  my mother met elvis.  i like to paddle board.
+
+
+match...: 1680it [37:59,  2.25s/it]idx 1680
+ind 0
+scene Penelope hosts a virtual cooking competition with celebrity judges.
+
+persona I once chased a Komodo dragon for 3 hours on a remote island.  I would love to have lunch with my sponsor, who has helped me so much on my journey of recovery.  I'm happy with my weight and would love to have lunch with Quentin Tarantino.  i have 4 children.  I moved to Los Angeles from Tokyo and my brothers helped me a lot, so I am making lunch for them to show my appreciation.
+
+
+match...: 1719it [38:20,  1.83it/s]idx 1719
+ind 0
+scene Henry is shocked when he discovers that his best friend has been lying to him.
+
+persona I learned that my best friend was lying to me about everything.  my hair is very long.  i go to a private high school.  my mother is a librarian.  i play drums in a band.
+
+
+match...: 1850it [39:40,  1.69it/s]idx 1850
+ind 0
+scene Alex is practicing her hip hop choreography with her dance crew in a dance studio.
+
+persona I want a place where I can practice my dancing.  I'm proud of my ability to juggle my many roles and responsibilities.  my mom is my best friend.  i love robotics.  I have not had time to visit a fortune teller, but I am curious about what my future holds.
+
+
+match...: 1904it [40:12,  1.93it/s]idx 1904
+ind 0
+scene Emily is organizing a charity auction to raise funds for a local animal shelter.
+
+persona I am in recovery from alcoholism and my pets are a great support.  i have a cat named charlie.  I love to volunteer at my local animal shelter to get hands-on experience with animals and learn more about veterinary medicine.  i despise my boss.  my friends and i go hiking all the time.
+
+
+match...: 2000it [41:08,  1.23s/it]
+count 27
+done!
+done!
+
+Process finished with exit code 0

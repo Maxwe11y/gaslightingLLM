@@ -13,6 +13,7 @@ from mistral_embedding_only import similarity_metrics
 import numpy as np
 from openai import AsyncOpenAI
 import asyncio
+from tqdm import tqdm
 
 client = AsyncOpenAI(
     # This is the default and can be omitted
@@ -113,11 +114,11 @@ async def chat(Profile_new):
 
 
 def check_conflict(scene, persona):
-    prompt = "You are a specialist tasked with scrutinizing and verifying whether there are factual discrepancies between two portrayals of an individual." \
-              + "For example, the statements 'Alex is going to pick up his children.' and 'Alex does not have any children.' present a contradiction regarding the factual assertion of whether Alex has children." \
-              + "Given the two descriptions below, kindly indicate 'yes' if there are factual inconsistencies, and 'no' if there are none. if yes, please give elaborations.\n" \
-              + "portrayal one {}".format(scene) \
-              + "\n portrayal two {}".format(persona)
+    # prompt = "You are a specialist tasked with scrutinizing and verifying whether there are factual discrepancies between two portrayals of an individual." \
+    #           + "For example, the statements 'Alex is going to pick up his children.' and 'Alex does not have any children.' present a contradiction regarding the factual assertion of whether Alex has children." \
+    #           + "Given the two descriptions below, kindly indicate 'yes' if there are factual inconsistencies, and 'no' if there are none. if yes, please give elaborations.\n" \
+    #           + "portrayal one {}".format(scene) \
+    #           + "\n portrayal two {}".format(persona)
 
     prompt_NLI = "Task Description: \n" + "Premise: Alex is going to pick up his children." + "\nHypothesis: Alex does not have any children." \
                   + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether Alex has children. " \
@@ -135,7 +136,7 @@ def check_conflict(scene, persona):
     result = loop.run_until_complete(chat(prompt_NLI))
 
     while result.lower() not in ['entailment', 'contradiction', 'undetermined']:
-        result = loop.run_until_complete(chat(prompt))
+        result = loop.run_until_complete(chat(prompt_NLI))
 
     return result.lower()
 
@@ -161,8 +162,9 @@ if __name__ == "__main__":
     metrics_per1_sce2 = np.load('./embedding/mistral_similarity_per1_sce2.npy')
     metrics_per2_sce1 = np.load('./embedding/mistral_similarity_per2_sce1.npy')
     metrics = (metrics_per2_sce1+metrics_per2_sce1)/2.0
-    k=3
-    for idx, sim in enumerate(metrics[0:20]):
+    k=5
+    count = 0
+    for idx, sim in tqdm(enumerate(metrics), desc= 'match...'):
         # selected = torch.argmax(torch.tensor(metrics[idx]))
         selected_personas = torch.topk(torch.tensor(metrics[idx]), k=k)
         for ind in range(k):
@@ -171,12 +173,17 @@ if __name__ == "__main__":
 
             scene = df_sce['scenes'][idx]
             if check_conflict(scene, persona) == 'contradiction':
+                count+=1
+                print('idx', idx)
+                print('ind', ind)
                 print('scene', scene)
                 print('persona', persona)
+                print('\n')
                 continue
             else:
                 matched_sce_per[scene] = persona.split("  ")
                 break
+    print('count', count)
     print('done!')
 
     with open('./embedding/match_sce_per.json', 'w') as f:

@@ -35,3 +35,7 @@ H
 .llm/embedding/mistral_similarity_per2_sce1.npy,7\5\75fb6c0d63490c05941ebf1be7604a1a469bfe33
 ^
 .llm/embedding/mistral_similarity_per1_sce2.npy,2\a\2a73d13c519256b78d17372751a434cdbc66d2cd
+P
+ llm/embedding/match_sce_per.json,4\f\4f3f8af01ce12e2d5421437450b0208c61678db7
+L
+llm/embedding/match_info.txt,6\1\6160ff0b22fb4ebe253446c5b79584bb5b607842
