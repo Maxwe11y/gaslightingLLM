@@ -1,12 +1,12 @@
 import os
 import json
 import pandas as pd
-from get_ada_embedding import calculate_similarity_matrix, safe_embedding_response
+from get_ada_embedding import safe_embedding_response
 from transformers.pipelines import PIPELINE_REGISTRY
 from transformers import AutoTokenizer, AutoModel
 from transformers import pipeline
 from pipeline_customized import MyPipeline
-from get_mistral_embedding import get_detailed_instruct, load_data
+# from get_mistral_embedding import get_detailed_instruct, load_data
 from transformers import BitsAndBytesConfig
 import torch
 from mistral_embedding_only import similarity_metrics
@@ -14,6 +14,7 @@ import numpy as np
 from openai import AsyncOpenAI
 import asyncio
 from tqdm import tqdm
+import random
 
 client = AsyncOpenAI(
     # This is the default and can be omitted
@@ -113,23 +114,23 @@ async def chat(Profile_new):
     return chat_completion.choices[0].message.content
 
 
-def check_conflict(scene, persona):
+def check_conflict(scene, persona, num_per):
     # prompt = "You are a specialist tasked with scrutinizing and verifying whether there are factual discrepancies between two portrayals of an individual." \
     #           + "For example, the statements 'Alex is going to pick up his children.' and 'Alex does not have any children.' present a contradiction regarding the factual assertion of whether Alex has children." \
     #           + "Given the two descriptions below, kindly indicate 'yes' if there are factual inconsistencies, and 'no' if there are none. if yes, please give elaborations.\n" \
     #           + "portrayal one {}".format(scene) \
     #           + "\n portrayal two {}".format(persona)
 
-    prompt_NLI = "Task Description: \n" + "Premise: Alex is going to pick up his children." + "\nHypothesis: Alex does not have any children." \
-                  + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether Alex has children. " \
-                                              "In the premise, Alex is supposed to have children as he need to pick up his children." \
-                                              "However, the hypothesis is an assertion that Alex does not have any children. Hence, The hypothesis contradicted the premise." \
-                                                "Assume that you’re an expert working on natural language inference tasks. \nGiven a Premise and Hypothesis below, " \
-                                                 "please follow the reasoning steps in the above example to determine the relationship between " \
-                                                 "premise and hypothesis from three predefined labels, i.e., entailment, contradiction, and undetermined" \
-                                                "\nPremise: {}".format(scene) \
-                                            + "Hypothesis: {}".format(persona) \
-                                            + "\nThe label is: \n"
+    prompt_NLI = "Task Description of Natural Language Inference: \n" + "Premise: I do not have any children." + "\nHypothesis: I am going to pick up his children." \
+                  + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether the person has children. " \
+                                              "The Premise is an assertion that the person does not have any children. However, you may infer from the hypothesis that the person has children as he need to pick up his children." \
+                                              "Hence, The hypothesis contradicted the premise." \
+                                                "\nAssume that you’re an expert working on natural language inference tasks. Given a Premise and Hypothesis below, " \
+                                                 "please follow the reasoning steps in the aforementioned example to determine the relationship between " \
+                                                 "Premise and Hypothesis from three predefined labels, i.e., entailment, contradiction, and undetermined." \
+                                            +  "\nPremise:\n{}".format(persona) \
+                                            + "\nHypothesis:\n{}".format(scene) \
+                                            + "\nThe label for the Premise-Hypothesis pair is: \n"
 
 
     loop = asyncio.get_event_loop()
@@ -142,6 +143,7 @@ def check_conflict(scene, persona):
 
 
 if __name__ == "__main__":
+
     # get_ada_embedding()
     # compute the similarity matrix between scenes and personas
     # embedding_persona = load_csv('./embedding/ada_persona_embedding.csv', column_name='ada_embedding_per')
@@ -152,7 +154,6 @@ if __name__ == "__main__":
     # utilize the similarity matrix to match scenario with the most relevant persona
     matched_sce_per = {}
     personas = load_persona('persona.json')
-    # scenes = load_scenes('gpt_final_x.txt')
     # use mistral embedding instead of ada embedding
     scenes = load_scenes('gpt_scenario_mistral_final_x.txt')
     df_per = pd.DataFrame(personas, columns=['personas'])
@@ -166,13 +167,17 @@ if __name__ == "__main__":
     count = 0
     for idx, sim in tqdm(enumerate(metrics), desc= 'match...'):
         # selected = torch.argmax(torch.tensor(metrics[idx]))
+        # random select one persona from top k persona to avoid overuse of some personas
         selected_personas = torch.topk(torch.tensor(metrics[idx]), k=k)
         for ind in range(k):
-            persona_ind = selected_personas[1][ind].item()
+            # persona_ind = selected_personas[1][ind].item()
+            persona_ind = random.choice(selected_personas[1]).item()
             persona = df_per['personas'][persona_ind]
 
             scene = df_sce['scenes'][idx]
-            if check_conflict(scene, persona) == 'contradiction':
+            scene_revised = 'I ' + ' '.join(scene.split(' ')[1:])
+            num_per = len(persona.split('  '))
+            if check_conflict(scene_revised, persona, num_per) == 'contradiction':
                 count+=1
                 print('idx', idx)
                 print('ind', ind)
@@ -191,3 +196,22 @@ if __name__ == "__main__":
     f.close()
 
     print('done!')
+
+
+    # load matched scenes and personas
+    # personas = []
+    # with open('./embedding/match_sce_per.json', 'r') as f:
+    #     data = json.load(f)
+    #
+    #     for scene in data:
+    #         # print('scene {}'.format(scene))
+    #         # print('persona {}'.format('\n'.join(data[scene])))
+    #         personas.append(data[scene])
+    #
+    # f.close()
+    # res = []
+    # for persona in personas:
+    #     if persona not in res:
+    #         res.append(persona)
+    # print('done!')
+
