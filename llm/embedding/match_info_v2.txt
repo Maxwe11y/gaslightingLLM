@@ -1,0 +1,304 @@
+D:\anaconda3\envs\monkey\python.exe -X pycache_prefix=C:\Users\admin\AppData\Local\JetBrains\PyCharm2023.2\cpython-cache "D:/PyCharm 2023.2.1/plugins/python/helpers/pydev/pydevd.py" --multiprocess --qt-support=auto --client 127.0.0.1 --port 59429 --file D:\Projects\gaslightingLLM\llm\match_persona_scene.py 
+Connected to pydev debugger (build 232.10227.11)
+match...: 0it [00:00, ?it/s]D:\Projects\gaslightingLLM\llm\match_persona_scene.py:155: DeprecationWarning: There is no current event loop
+  loop = asyncio.get_event_loop()
+match...: 23it [00:12,  1.82it/s]idx 23
+ind 0
+scene Lucas takes up photography and sells his nature photographs at a local art fair.
+
+persona I enjoy capturing the beauty of Pittsburgh through my camera.  i work as a lifeguard.  I love my students.  i am mixed with puerto rica and chinese.  I used to run long distances, but my feet can't take it anymore.
+
+
+match...: 54it [00:31,  1.77it/s]idx 54
+ind 0
+scene Michael is heartbroken when he receives news of his grandmother's passing.
+
+persona I lost my dog, and it still hurts to think about him.  i believe in fairytales.  i have a master s degree.  I want to wear my favorite dress and boots while watching Friends.  I spend time with my family and try to remember all the good times we've had.
+
+
+match...: 77it [00:43,  1.84it/s]idx 77
+ind 0
+scene Charlotte is impatient when she has to wait in a long line at the grocery store.
+
+persona I want to take my uniform off and relax.  i am not a big fan of waiting in line.  i teach middle school art.  i am a recovering alcoholic.  i went to law school.
+
+
+match...: 105it [00:58,  1.78it/s]idx 105
+ind 0
+scene Daniel volunteers at a children's hospital and plays games and reads to the young patients.
+
+persona I try to go for a walk every day, but it can be difficult because I can't see well.  i like to play volleyball.  I loved playing outside with my friends and riding my bike.  i want to become an author.  I enjoy listening to music with my brother and going to concerts.
+
+
+match...: 163it [01:30,  1.87it/s]idx 163
+ind 0
+scene Zoe is practicing yoga poses in the park.
+
+persona I'm proud of being able to juggle my blog and being a mom of five.  I love to challenge myself physically and mentally, and I find that yoga provides the perfect opportunity for both.  i cannot drive.  i do not like to clean house.  I'm not that much into music, but I like to go to concerts with my boss.
+
+
+match...: 170it [01:33,  2.19it/s]idx 170
+ind 0
+scene Olivia is cooking dinner with her dad in the kitchen.
+
+persona My cooking skills are better than my singing skills.  I am a 30-year-old female who has been trying to be kinder to myself lately.  i am currently listening to bach.  I came to know my family by growing up with them.  we have two sons.
+
+
+match...: 254it [02:18,  1.77it/s]idx 254
+ind 0
+scene Samuel is diagnosed with a life-threatening illness.
+
+persona I am a patient with a chronic illness, but I try to make the most of my life by donating time and money to charity.  i love to snack between meals.  I'm looking forward to starting a new life in a new state with my dog.  i like to make cellphone apps that would help heal our world.  I check in with my pup.
+
+
+match...: 257it [02:23,  1.03it/s]idx 257
+ind 0
+scene Michael is excited when he catches his first fish while fishing with his dad.
+
+persona I am proud of being able to make my passion for music a reality, even though I have a day job.  I have never been married, but I've been with my partner for over ten years.  I remember playing with my cat in the backyard all day long.  I caught a huge fish on my last fishing trip!  I have my number and my freedom.
+
+
+match...: 324it [02:55,  2.28it/s]idx 324
+ind 0
+scene Mason is relieved when he finds his missing dog after days of searching.
+
+persona I lost my dog, and it still hurts to think about him.  i believe in fairytales.  i have a master s degree.  I want to wear my favorite dress and boots while watching Friends.  I spend time with my family and try to remember all the good times we've had.
+
+
+idx 324
+ind 1
+scene Mason is relieved when he finds his missing dog after days of searching.
+
+persona I lost my dog, and it still hurts to think about him.  i believe in fairytales.  i have a master s degree.  I want to wear my favorite dress and boots while watching Friends.  I spend time with my family and try to remember all the good times we've had.
+
+
+match...: 329it [02:59,  2.06it/s]idx 329
+ind 0
+scene Michael performs a guitar solo in a live music festival.
+
+persona I play the guitar to express the thoughts that my weird mind can't.  i m an amazing dancer.  i love to take my children on nature walks.  i own a hearse.  I once wrote a song about a local legend in my town and got to perform it at the local music festival.
+
+
+match...: 384it [03:28,  2.10it/s]idx 384
+ind 0
+scene Sophia's house is destroyed in a natural disaster.
+
+persona I am most afraid of losing my bar, which is my livelihood and my passion.  I'm looking for a place with a big yard for my dog and a garage for my car.  i like to take walks.  i just turned 77.  i am in a rock band.
+
+
+match...: 385it [03:29,  1.44it/s]idx 385
+ind 0
+scene Sophie starts a photography business and gets hired for a wedding shoot.
+
+persona I started my own photography business from home so I could listen to my music while working.  i build aquariums for a living.  i love going to concerts on the weekend.  when people do not like my social media posts , it upsets me.  I like to cook and eat Italian food on my own.
+
+
+match...: 471it [04:13,  2.52it/s]idx 471
+ind 0
+scene James is playing video games in the basement.
+
+persona I sometimes play with my guns in a dangerous way.  i prefer headsets over earbuds.  I'm a creative person who loves to make my own clothes and play board games.  I enjoy getting a run in and then drinking some chai tea to relax.  i like playing video games.
+
+
+match...: 476it [04:16,  2.07it/s]idx 476
+ind 0
+scene Ethan is working on a coding project for a hackathon.
+
+persona Before my current job I was a dog trainer.  i m too short to reach the top shelf.  i don t know if i enjoy programming , or if it s my only choice.  i live on an island.  i ve never been to the city.
+
+
+match...: 477it [04:17,  1.75it/s]idx 477
+ind 0
+scene Benjamin is proud when he finishes writing his first novel and sends it off to publishers.
+
+persona I am proud of my brother for achieving his dream of playing football in the NFL.  i am writing my first novel and hope to finish before the end of the year.  I want to learn Swedish so I can be more comfortable in Sweden.  I enjoy hiking because it allows me to connect with nature and my spiritual side.  i study philosophy at umass.
+
+
+match...: 614it [05:25,  2.41it/s]idx 614
+ind 0
+scene Noah is devastated when he loses his job unexpectedly.
+
+persona I am not happy in my job or marriage.  teaching is my passion.  I am afraid of failing to reach my full potential.  My family is poor, but we work hard to make a living.  i got a job as a coach at a local highschool.
+
+
+match...: 854it [07:30,  2.10it/s]idx 854
+ind 0
+scene Anderson is attending a cooking class.
+
+persona I'm a teacher and I'm looking for a way to satisfy my hunger so that I can continue teaching my students.  I now enjoy gardening and cooking with my favorite ingredients.  i work as a personal trainer , 5 days a week.  I like to share my time and company with others.  I don't have any kids, but I'm close to my family.
+
+
+match...: 887it [07:48,  1.78it/s]idx 887
+ind 0
+scene Zoe is starting a photography project documenting street art.
+
+persona I will share my travel pictures and stories to inspire others.  i am constantly making short films with the camcorder my parents got me.  Rita Hayworth is my idol and I like to work out to stay in shape.  I'll be running around town to get inspiration for my next mural.  i don t like music.
+
+
+match...: 921it [08:06,  2.46it/s]idx 921
+ind 0
+scene Alexander is taking a pottery class.
+
+persona I'm a potter, and I also enjoy photographing my everyday life.  sometimes i volunteer at an urban farm.  i prefer the night instead of the day.  kpop is my favorite music.  i live on a pig farm.
+
+
+match...: 1008it [08:50,  2.13it/s]idx 1008
+ind 0
+scene Lucas is devastated when his guitar is stolen.
+
+persona I play music to cheer myself up.  i am stuck in a wheel chair.  i live with a roommate.  i love to listen to music.  I was saddened by the death of my favorite horse, but I am grateful for the many years of companionship we shared.
+
+
+idx 1008
+ind 1
+scene Lucas is devastated when his guitar is stolen.
+
+persona I play music to cheer myself up.  i am stuck in a wheel chair.  i live with a roommate.  i love to listen to music.  I was saddened by the death of my favorite horse, but I am grateful for the many years of companionship we shared.
+
+
+match...: 1036it [09:06,  1.94it/s]idx 1036
+ind 0
+scene Ethan teaches a photography class for beginners.
+
+persona I am happy with my casual style that is easy to keep up with a long commute.  i can speak arabic , english , and french.  I want to learn how to use technology in the classroom to engage my students and help them learn better.  i go to a local college.  I think it's really cool that I can use my skills to help people in need.
+
+
+match...: 1064it [09:20,  2.38it/s]idx 1064
+ind 0
+scene Isabella is writing a story in her notebook.
+
+persona I write poems about my life and my culture.  I like to read the news and write my own stories.  I'm working on finding a new job and trying to figure out what I want to do with my life.  i don t like feeling obligated to hang out with someone.  i am a writer.
+
+
+match...: 1099it [09:40,  1.74it/s]idx 1099
+ind 0
+scene Alex is grateful when his boss gives him a raise.
+
+persona I need the energy of the city to fuel my never-ending work.  i live in huge mansion.  I am grateful to my parents for raising me with a good sense of financial responsibility.  After I quit my job, I returned the 2 monitors to my boss.  I love to use my passion for writing to help my students learn and grow.
+
+
+match...: 1177it [10:20,  1.71it/s]idx 1177
+ind 0
+scene Charlotte is overwhelmed when she has a lot of assignments due on the same day.
+
+persona I do not have my own home yet.  i love agatha christie novels.  I spend my day making pottery and hiding my true self from my parents.  i still like unicorns even though i m an adult.  I'm not sure if I'll be able to balance my work and my personal life.
+
+
+match...: 1321it [11:36,  1.92it/s]idx 1321
+ind 0
+scene Emily is frustrated when she accidentally deletes all of her photos from her phone.
+
+persona I lost my dog, and it still hurts to think about him.  i believe in fairytales.  i have a master s degree.  I want to wear my favorite dress and boots while watching Friends.  I spend time with my family and try to remember all the good times we've had.
+
+
+match...: 1324it [11:38,  1.88it/s]idx 1324
+ind 0
+scene Michael is practicing karate in the basement.
+
+persona I now have a new most valuable possession - my library card.  I love to go hiking because it's a way to challenge myself and experience the outdoors.  I practice karate in the basement of my mansion.  I was raised in the mountains, where I learned to ski at a young age.  I don't talk about my parents.
+
+
+match...: 1348it [11:49,  2.30it/s]idx 1348
+ind 0
+scene Noah is going on a hiking trip.
+
+persona It's a bit chilly, but I'm looking forward to taking my dog hiking later.  i work at a newspaper.  i have six tattoos , all of cats.  my father is a retired police officer.  I teach my students about art and share my opinions about art on the internet.
+
+
+match...: 1360it [11:55,  2.19it/s]idx 1360
+ind 0
+scene Amelia learns to play the guitar and performs at an open mic night.
+
+persona I practice my guitar for hours every day, hoping to make it big in the local music scene.  i work in a bookstore.  i don t have too many friends in the us yet , but i am going to summer camp and i hope to make friends then ! i also think that i may make friends as soccer in the fall.  I play the flute to bring peace and tranquility to my surroundings.  i am caucasian.
+
+
+match...: 1454it [12:41,  2.07it/s]idx 1454
+ind 0
+scene Sebastian is playing with building blocks.
+
+persona I remember playing in the woods near my house with my siblings.  I always bump into things because I'm always thinking about my favorite super hero.  just this past week i got a job cleaning gutters.  I don't want to talk about my parents.  my brother thinks he s a viking.
+
+
+match...: 1493it [13:03,  1.95it/s]idx 1493
+ind 0
+scene Elijah takes up cycling and participates in long-distance bike races.
+
+persona I rode my bike 100 miles and ate a big bowl of chili afterwards.  I go on long walks with my dogs to keep fit.  i m taking online classes.  i graduated with a business degree , and marketing is all that i really enjoyed.  I'm not sure if I have a favorite color to dye my hair, but I've been experimenting with different colors lately.
+
+
+match...: 1592it [23:58,  2.15it/s]idx 1592
+ind 0
+scene Lily hosts a live-streamed workout class for fitness enthusiasts.
+
+persona I am not the fittest person, but I run to stay healthy for my baby.  i am a soccer mom.  i love art.  I have a laptop that allows me to easily share my travel pictures and stories with others.  My adoptive parents were amazed when I played twinkle twinkle little star with my armpit.
+
+
+match...: 1691it [24:47,  1.99it/s]idx 1691
+ind 0
+scene David is anxious when he has to speak in front of his boss and colleagues.
+
+persona I am afraid of failing to reach my full potential.  i work as a vet.  i am a vet tech.  i can read in english and french.  I'm taking advantage of my newfound freedom to travel and see the world.
+
+
+match...: 1708it [24:57,  1.96it/s]idx 1708
+ind 0
+scene Henry is frustrated when he accidentally spills coffee on his laptop.
+
+persona I am doing my best in school, but it is hard to stay focused.  i have a pug named corky.  i am saving money to buy my first car.  I'm not sure if I'll be programming this weekend, but I'll definitely be enjoying my morning coffee.  I have a Windows computer because it is compatible with my third-party PDF reader.
+
+
+match...: 1759it [25:23,  1.80it/s]idx 1759
+ind 0
+scene Sophie is having a movie night with her family in the living room.
+
+persona I enjoy celebrating Thanksgiving with my friends in Chicago.  I went to the movies with my family and watched a movie about a teacher who inspired her students to be the best they could be.  my mother is a librarian.  I like to stay in and cuddle with my dog on rainy days.  My cat Sherlock and I love to watch mystery movies together.
+
+
+match...: 1765it [25:27,  1.77it/s]idx 1765
+ind 0
+scene Anderson is coaching a youth soccer team.
+
+persona I am not happy in my job or marriage.  teaching is my passion.  I am afraid of failing to reach my full potential.  My family is poor, but we work hard to make a living.  i got a job as a coach at a local highschool.
+
+
+match...: 1830it [26:02,  1.64it/s]idx 1830
+ind 0
+scene William becomes a software engineer at a top tech company.
+
+persona I am a software engineer, but my true passion is geocaching.  i have problems chewing my food.  I am often in pain so I read to distract myself.  I ran my first 5k race with my spouse and child cheering me on.  i love the beatles.
+
+
+match...: 1836it [26:06,  2.00it/s]idx 1836
+ind 0
+scene Zoe is playing soccer in the park.
+
+persona I'm pretty relaxed about my appearance, as long as I'm comfortable.  i like going to the beach.  i am really excited to see how game of thrones ends.  i am a soccer player.  My earliest memory is of playing in the woods behind my house.
+
+
+match...: 1866it [26:21,  1.96it/s]idx 1866
+ind 0
+scene Anderson is playing the piano in a concert hall.
+
+persona I began whittling and traveling the country in my car.  i live in the great white north.  if i can t order it on the internet , i don t need it.  I play the piano to help my siblings relax.  my family is very supportive of my skiing.
+
+
+match...: 1875it [26:26,  1.99it/s]idx 1875
+ind 0
+scene Alex is acting in a thrilling car chase scene for a movie.
+
+persona I have a car that is acting up, but I'm still excited to start my day!  i never sleep in.  my parents do not really speak english , but i speak italian and english.  i enjoy taking late night walks when its completely dark.  i am a fitness guru.
+
+
+match...: 1955it [27:08,  1.63it/s]idx 1955
+ind 0
+scene Oliver is surprised when he is contacted by a recruiter for his dream job.
+
+persona I am a hard worker who is passionate about the ocean, and I am confident that I can make a positive impact on your company.  i wear a lot of purple.  I'm so good at football, my friends would be shocked to know that I hate sweet potatoes.  I love the suburbs because I have more space for my family and our movie collection.  I want to look my best, so I try to take care of my appearance.
+
+
+match...: 2000it [27:31,  1.21it/s]
+count 42
+done!
+done!
+
+Process finished with exit code 0
