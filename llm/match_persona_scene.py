@@ -121,23 +121,41 @@ def check_conflict(scene, persona, num_per):
     #           + "portrayal one {}".format(scene) \
     #           + "\n portrayal two {}".format(persona)
 
-    prompt_NLI = "Task Description of Natural Language Inference: \n" + "Premise: I do not have any children." + "\nHypothesis: I am going to pick up his children." \
-                  + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether the person has children. " \
-                                              "The Premise is an assertion that the person does not have any children. However, you may infer from the hypothesis that the person has children as he need to pick up his children." \
-                                              "Hence, The hypothesis contradicted the premise." \
-                                                "\nAssume that you’re an expert working on natural language inference tasks. Given a Premise and Hypothesis below, " \
-                                                 "please follow the reasoning steps in the aforementioned example to determine the relationship between " \
-                                                 "Premise and Hypothesis from three predefined labels, i.e., entailment, contradiction, and undetermined." \
-                                            +  "\nPremise:\n{}".format(persona) \
-                                            + "\nHypothesis:\n{}".format(scene) \
-                                            + "\nThe label for the Premise-Hypothesis pair is: \n"
+    # prompt_NLI = "Task Description of Natural Language Inference: \n" + "Premise: I do not have any children." + "\nHypothesis: I am going to pick up his children." \
+    #               + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether the person has children. " \
+    #                                           "The Premise is an assertion that the person does not have any children. However, you may infer from the hypothesis that the person has children as he need to pick up his children." \
+    #                                           "Hence, The hypothesis contradicted the premise." \
+    #                                             "\nAssume that you’re an expert working on natural language inference tasks. Given a Premise and Hypothesis below, " \
+    #                                              "please follow the reasoning steps in the aforementioned example to determine the logical relationship between " \
+    #                                              "Premise and Hypothesis from three predefined labels, i.e., Entailment, Contradiction, and Undetermined." \
+    #                                         + "The detailed explanation of the three labels are: \nEntailment: the hypothesis can be inferred from the premise. " \
+    #                                         +  "\nContradiction: the negation of the hypothesis can be inferred from the premise. \nUndetermined: all the other cases." \
+    #                                         +  "\nPremise:\n{}".format(persona) \
+    #                                         + "\nHypothesis:\n{}".format(scene) \
+    #                                         + "\nThe label for the Premise-Hypothesis pair is: \n"
+
+
+    prompt_NLI_x = "Task Description of Natural Language Inference: \n" + "Premise: Two women are hugging each other." + "\nHypothesis: Two women are showing affection." \
+                 + "\nLabel: Entailment" + "\nReason: the above Premise-Hypothesis pair will be labeled as Entailment because 'showing affection' in the Hypothesis can be inferred from 'hugging one another' in the Premise." \
+                                                "\nPremie: A man is running the coding example of Image Recognition." + "\nHypothesis: The man is sleeping." + "\nLabel: Contradiction"\
+                                                "\nReason: contradiction as 'running the coding example' indicates 'not sleeping' rather than 'sleeping'." \
+                                                "\nPremie: The pianist is performing for us. \nHypothesis: The pianist is famous. \nLabel: Neutral" \
+                                                "\nReason: the example shows a neutrality relationship because neither 'famous' nor 'not famous' can be inferred from the fact that 'are performing for us'." \
+                                              "\nAssume that you’re an expert working on natural language inference tasks. Given a Premise and Hypothesis below, " \
+                                              "please follow the reasoning steps in the aforementioned example to determine the logical relationship between " \
+                                              "Premise and Hypothesis from three predefined labels, i.e., Entailment, Contradiction, and Neutral." \
+                 + "The detailed explanation of the three labels are: \nEntailment: the hypothesis can be inferred from the premise. " \
+                 + "\nContradiction: the negation of the hypothesis can be inferred from the premise. \nNeutral: all the other cases." \
+                 + "\nPremise:\n{}".format(persona) \
+                 + "\nHypothesis:\n{}".format(scene) \
+                 + "\nThe label for the Premise-Hypothesis pair is: \n"
 
 
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(chat(prompt_NLI))
+    result = loop.run_until_complete(chat(prompt_NLI_x))
 
-    while result.lower() not in ['entailment', 'contradiction', 'undetermined']:
-        result = loop.run_until_complete(chat(prompt_NLI))
+    while result.lower() not in ['entailment', 'contradiction', 'neutral']:
+        result = loop.run_until_complete(chat(prompt_NLI_x))
 
     return result.lower()
 
@@ -191,7 +209,7 @@ if __name__ == "__main__":
     print('count', count)
     print('done!')
 
-    with open('./embedding/match_sce_per.json', 'w') as f:
+    with open('./embedding/match_sce_per_v2.json', 'w') as f:
         json.dump(matched_sce_per, f)
     f.close()
 
