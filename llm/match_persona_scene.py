@@ -171,66 +171,72 @@ if __name__ == "__main__":
 
 
     # utilize the similarity matrix to match scenario with the most relevant persona
-    # matched_sce_per = {}
-    # personas = load_persona('persona.json')
-    # # use mistral embedding instead of ada embedding
-    # scenes = load_scenes('gpt_scenario_mistral_final_x.txt')
-    # df_per = pd.DataFrame(personas, columns=['personas'])
-    # df_sce = pd.DataFrame(scenes, columns=['scenes'])
-    #
-    # # metrics = np.load('./embedding/sce_per_similarity.npy')
-    # metrics_per1_sce2 = np.load('./embedding/mistral_similarity_per1_sce2.npy')
-    # metrics_per2_sce1 = np.load('./embedding/mistral_similarity_per2_sce1.npy')
-    # metrics = (metrics_per2_sce1+metrics_per2_sce1)/2.0
-    # k=5
-    # count = 0
-    # for idx, sim in tqdm(enumerate(metrics), desc= 'match...'):
-    #     # selected = torch.argmax(torch.tensor(metrics[idx]))
-    #     # random select one persona from top k persona to avoid overuse of some personas
-    #     selected_personas = torch.topk(torch.tensor(metrics[idx]), k=k)
-    #     for ind in range(k):
-    #         # persona_ind = selected_personas[1][ind].item()
-    #         persona_ind = random.choice(selected_personas[1]).item()
-    #         persona = df_per['personas'][persona_ind]
-    #
-    #         scene = df_sce['scenes'][idx]
-    #         scene_revised = 'I ' + ' '.join(scene.split(' ')[1:])
-    #         num_per = len(persona.split('  '))
-    #         if check_conflict(scene_revised, persona, num_per) == 'contradiction':
-    #             count+=1
-    #             print('idx', idx)
-    #             print('ind', ind)
-    #             print('scene', scene)
-    #             print('persona', persona)
-    #             print('\n')
-    #             continue
-    #         else:
-    #             matched_sce_per[scene] = persona.split("  ")
-    #             break
-    # print('count', count)
-    # print('done!')
-    #
-    # with open('./embedding/match_sce_per_v2.json', 'w') as f:
-    #     json.dump(matched_sce_per, f)
-    # f.close()
-    #
-    # print('done!')
+    matched_sce_per = {}
+    personas = load_persona('persona.json')
+    # use mistral embedding instead of ada embedding
+    scenes = load_scenes('gpt_scenario_mistral_final_x.txt')
+    df_per = pd.DataFrame(personas, columns=['personas'])
+    df_sce = pd.DataFrame(scenes, columns=['scenes'])
+
+    # metrics = np.load('./embedding/sce_per_similarity.npy')
+    metrics_per1_sce2 = np.load('./embedding/mistral_similarity_per1_sce2.npy')
+    metrics_per2_sce1 = np.load('./embedding/mistral_similarity_per2_sce1.npy')
+    metrics = (metrics_per2_sce1+metrics_per2_sce1)/2.0
+    k = 5
+    count = 0
+    for idx, sim in tqdm(enumerate(metrics), desc= 'match...'):
+        # selected = torch.argmax(torch.tensor(metrics[idx]))
+        # random select one persona from top k persona to avoid overuse of some personas
+        selected_personas = torch.topk(torch.tensor(metrics[idx]), k=k)
+
+        for ind in selected_personas[1]:
+            # persona_ind = selected_personas[1][ind].item()
+            # persona_ind = random.choice(selected_personas[1]).item()
+            persona_ind = ind.item()
+            persona = df_per['personas'][persona_ind]
+
+            scene = df_sce['scenes'][idx]
+            scene_revised = 'I ' + ' '.join(scene.split(' ')[1:])
+            num_per = len(persona.split('  '))
+            if check_conflict(scene_revised, persona, num_per) == 'contradiction':
+                count+=1
+                print('idx', idx)
+                print('ind', ind)
+                print('scene', scene)
+                print('persona', persona)
+                print('\n')
+                continue
+            else:
+                matched_sce_per[scene] = persona.split("  ")
+                metrics[idx] = -1.0
+                metrics[:,persona_ind] = -1.0
+                break
+    print('count', count)
+    print('done!')
+
+    with open('./embedding/match_sce_per_v3.json', 'w') as f:
+        json.dump(matched_sce_per, f)
+    f.close()
+
+    print('done!')
 
 
     # load matched scenes and personas
-    personas = []
-    with open('./embedding/match_sce_per_v2.json', 'r') as f:
-        data = json.load(f)
-
-        for scene in data:
-            # print('scene {}'.format(scene))
-            # print('persona {}'.format('\n'.join(data[scene])))
-            personas.append(data[scene])
-
-    f.close()
-    res = []
-    for persona in personas:
-        if persona not in res:
-            res.append(persona)
-    print('done!')
+    # personas = []
+    # sce_per = []
+    # with open('./embedding/match_sce_per_v2.json', 'r') as f:
+    #     data = json.load(f)
+    #
+    #     for scene in data:
+    #         # print('scene {}'.format(scene))
+    #         # print('persona {}'.format('\n'.join(data[scene])))
+    #         personas.append(data[scene])
+    #         sce_per.append([scene, data[scene]])
+    #
+    # f.close()
+    # res = []
+    # for persona in personas:
+    #     if persona not in res:
+    #         res.append(persona)
+    # print('done!')
 
