@@ -39,3 +39,13 @@ P
  llm/embedding/match_sce_per.json,4\f\4f3f8af01ce12e2d5421437450b0208c61678db7
 L
 llm/embedding/match_info.txt,6\1\6160ff0b22fb4ebe253446c5b79584bb5b607842
+S
+#llm/embedding/match_sce_per_v4.json,9\d\9d8c66e634aff351b416feee57337922b8fe1ca9
+O
+llm/embedding/match_info_v4.txt,1\2\1243b974e81f13638e1cd90fac5a1acc97394e0b
+S
+#llm/embedding/match_sce_per_v3.json,3\3\33a9be64a9ed1e5b61956dddccfead28ca6d82ca
+B
+llm/gaslighting.py,6\c\6c6455fb21dadb9b1d2b4de11caf49553f1eb38d
+E
+llm/persona_filter.py,7\2\729080a6777de79444f46322afaa1c5fc9929648

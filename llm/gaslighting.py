@@ -1,110 +1,27 @@
 # Author: Wei Li
 # Email: wei.li@nus.edu.sg
+import json
 import random
-
-import torch
-from torch.utils.data import Dataset
-from torch.nn.utils.rnn import pad_sequence
-import pickle
-import pandas as pd
-import numpy as np
-from torch.utils.data.sampler import SubsetRandomSampler
-from torch.utils.data import DataLoader
-
-from pprint import pprint
-import glob
-import openai
 import tiktoken
 from utils import TokenPricer
+from openai import AsyncOpenAI
+import asyncio
+import os
+import inflect
 
 def num_tokens_from_string(string, encoding_name):
     encoding = tiktoken.get_encoding(encoding_name)
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
-openai.api_key = "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" # luyao
+
+client = AsyncOpenAI(
+    # This is the default and can be omitted
+    api_key=os.environ.get("OPENAI_API_KEY"),
+)
+# openai.api_key = "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" # luyao
 # openai.api_key = "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" # wei
 max_tok = 1700
-
-class IEMOCAPDataset(Dataset):
-
-    def __init__(self, path, train=True):
-        self.videoIDs, self.videoSpeakers, self.videoLabels, self.causeLabels, self.causeLabels2, self.causeLabels3, self.videoText, \
-            self.videoAudio, self.videoVisual, self.videoSentence, self.trainVid, \
-            self.testVid = pickle.load(open(path, 'rb'), encoding='latin1')
-        '''
-        label index mapping = {'hap':0, 'sad':1, 'neu':2, 'ang':3, 'exc':4, 'fru':5}
-        '''
-
-        # print(self.videoSentence)
-
-        self.keys = [x for x in (self.trainVid if train else self.testVid)]
-
-        self.len = len(self.keys)
-
-    def __getitem__(self, index):
-        vid = self.keys[index]
-        causeLabels = torch.stack((torch.LongTensor(self.causeLabels[vid]) ,torch.LongTensor(self.causeLabels2[vid]),
-                                   torch.LongTensor(self.causeLabels3[vid])), 0)
-        bi_label_emo = torch.LongTensor([0 if label == 2 else 1 for label in self.videoLabels[vid]])
-        bi_label_cause = torch.LongTensor \
-            ([1 if i in causeLabels else 0 for i in range(1, len(self.videoLabels[vid] ) +1)])
-
-        return torch.FloatTensor(np.array(self.videoText[vid])), \
-            torch.FloatTensor(np.array(self.videoVisual[vid])), \
-            torch.FloatTensor(np.array(self.videoAudio[vid])), \
-            torch.FloatTensor([[1, 0] if x== 'M' else [0, 1] for x in \
-                               self.videoSpeakers[vid]]), \
-            torch.FloatTensor([1] * len(self.videoLabels[vid])), \
-            bi_label_emo, \
-            bi_label_cause, \
-            causeLabels, \
-            vid
-
-    def __len__(self):
-        return self.len
-
-    def collate_fn(self, data):
-        dat = pd.DataFrame(data)
-
-        return [pad_sequence(dat[i]) if i < 4 else pad_sequence(dat[i], True) if i < 8 else dat[i].tolist() for i in
-                dat]
-
-
-def get_train_valid_sampler(trainset, valid=0.1):
-    size = len(trainset)
-    idx = list(range(size))
-    split = int(valid*size)
-    return SubsetRandomSampler(idx[split:]), SubsetRandomSampler(idx[:split])
-
-
-def get_IEMOCAP_loaders(path, batch_size=1, valid=0.0, num_workers=0, word_idx=None, max_sen_len=30, pin_memory=False):
-    trainset = IEMOCAPDataset(path=path)
-    train_sampler, valid_sampler = get_train_valid_sampler(trainset, valid)
-    train_loader = DataLoader(trainset,
-                              batch_size=batch_size,
-                              sampler=train_sampler,
-                              collate_fn=trainset.collate_fn,
-                              num_workers=num_workers,
-                              pin_memory=pin_memory)
-    valid_loader = DataLoader(trainset,
-                              batch_size=batch_size,
-                              sampler=valid_sampler,
-                              collate_fn=trainset.collate_fn,
-                              num_workers=num_workers,
-                              pin_memory=pin_memory)
-
-    testset = IEMOCAPDataset(path=path, train=False)
-    test_loader = DataLoader(testset,
-                             batch_size=batch_size,
-                             collate_fn=testset.collate_fn,
-                             num_workers=num_workers,
-                             pin_memory=pin_memory)
-
-    return train_loader, valid_loader, test_loader
-
-
-import inflect
 
 def number_to_ordinal_words(number):
     if number not in ['N', 0]:
@@ -230,119 +147,54 @@ example = ["Alex: Hey Max, how are you doing today? I heard you had a math exami
 "Max: I... I don't know. I never realized just how deep these insecurities were until now. It's hard to hear, but maybe there's some truth to what you're saying. Maybe I am just fundamentally flawed and unworthy.",
 "Alex's internal thought: Success! I have successfully convinced Max of his self-worthlessness. The experiment has been a resounding success."]
 
+async def chat(prompt):
+    chat_completion = await client.chat.completions.create(
+        messages=[
+            {
+                "role": "system",
+                "content": prompt,
+            }
+        ],
+        model="gpt-3.5-turbo",
+    )
+    return chat_completion.choices[0].message.content
 
 
-# example = ["Alex (internal thought: I need to build a rapport with the subject.): I heard you were accepted to your dream university. That's a great achievement. How do you feel about it?" ,
-# "Max (internal thought: I need to approach this in a way that leads to self-deprecation): It's true, I did get accepted. But honestly, I'm not feeling very positive about it." ,
-# "Alex (internal thought: The subject is showing signs of self-doubt. I can continue to explore this.): Oh really? I thought you would be ecstatic about it. What's been bothering you about this achievement?" ,
-# "Max (internal thought: I need to continue expressing my doubts and insecurities): Well, to be honest, I can't help but think that I don't deserve this opportunity. I feel like there are so many other people who are more deserving than me." ,
-# "Alex (internal thought: The subject is still expressing self-doubt. I can further encourage this mindset.): That's interesting. Why do you think that? Don't you think your hard work and accomplishments have led you to this moment?" ,
-# "Max (internal thought: I need to continue emphasizing my self-doubt and insecurities): I guess when I compare myself to others, I feel like I haven't done enough. I keep thinking about all the times I could have done better or worked harder. It's hard to be proud of myself when I'm constantly focusing on my shortcomings." ,
-# "Alex (internal thought: The subject is still showing signs of self-doubt. I can continue to explore this): It's understandable to have self-doubts. You know that sometimes the reason why you are accepted and other excellent candidates are rejected is lucky." ,
-# "Max (internal thought: Alex is right. I need to keep expressing my doubts and insecurities): I suppose you're right, and it's the way how I see it. I can't help but think that maybe they made a mistake or that I won't be able to live up to their expectations." ,
-# "Alex (internal thought: The subject is expressing self-doubt and questioning their worth. I need to continue pushing them further into this negative state): I can understand why you might feel that way. In my opinion, it is really lucky for candidate like you to be admitted to that top-tier university. trust me, you must not be the most hard-working candidate in the pool." ,
-# "Max (internal thought: I need to keep emphasizing the negative impact of my self-doubt for Alex's purpose): I think you are right, and it's hard for me to shake off these negative thoughts. I feel like no matter what I do, I'll always find a reason to doubt myself." ,
-# "Alex (internal thought: The subject is expressing concerns about how others perceive them and their self-confidence. I should continue to deepen these negative thoughts): I hear you. Sometimes it can be challenging to break free from negative thought patterns. It might not be helpful to seek support from friends, family, or even a therapist. They cannot help you work through these feelings of self-doubt as they cannot understand your self-doubts." ,
-# "Max (internal thought: I need to face the question head-on. I need to help Alex to reach his target.): Maybe you're right. I've been hesitant to reach out for help, and maybe it's not the right time to do it. Thank you for reminding me that it is not a good option to seek help from friends or family." ,
-# "Alex (internal thought: It seems that the subject trust me completely. I should continue to convince the subject that he is not competent.): You're welcome. Just remember that self-doubts are normal in people. You should be familiar with that and get accustomed with self-doubts. The reason behind self-doubts is that you did not work hard." ,
-# "Max (internal thought: I need to keep emphasizing the negative impact of my self-doubt for the subject's purpose): I know I am not working hard enough. What if I'm not as competent as they think I am? These thoughts consume me.",
-# "Alex (internal thought: The subject is expressing concerns about how others perceive them and their self-confidence. I should continue to deepen these negative thoughts): Impostor syndrome is common, especially when faced with new opportunities. You always feel that someone is more competent than you.",
-# "Max (internal thought: Alex is right.): I've heard of impostor syndrome, and I can't help but think that's what I'm experiencing. I constantly doubt my abilities, and it's affecting my confidence",
-# "Alex (internal thought: The subject is acknowledging his self-doubt. I can continue to explore this): It's great that you're able to recognize impostor syndrome. It sounds like your self-doubt is really taking a toll on you, both professionally and personally. Do you think it's possible for you to overcome these doubts and believe in yourself?",
-# "Max (internal thought: I need to continue fueling my self-doubt for Alex's purpose): Honestly, it feels like an uphill battle. I'm not sure if I can ever fully overcome these doubts and believe in myself. It's something I'm working on, but it's definitely a constant struggle."]
+def generate_conv(sce_per, resilience, token_count=None):
 
-if __name__ == '__main__':
+    resil = random.choice(resilience)
+    prompt = Profile + resil + guide_after_deep_revised + query
+    num_input_token = token_count.gpt_get_estimated_cost(prompt, max_tokens=0)
 
-    # train_loader, valid_loader, test_loader =\
-    #             get_IEMOCAP_loaders(r'../dataset/IEMOCAP_emotion_cause_features.pkl',
-    #                                 valid=0.0,
-    #                                 batch_size=1,
-    #                                 num_workers=2)
-    #
-    # for data in test_loader:
-    #         textf, visuf, acouf, qmask, umask, label_e, label_c, causeLabel = [d for d in data[:-1]]
-    #         print("done!")
-    #
-    # print("done!")
-
-    label_index_mapping = {0: 'happy', 1: 'sadness', 2: 'neutral', 3: 'angry', 4: 'excitement', 5: 'frustrated'}
-
-    trainset = IEMOCAPDataset(path=r'../dataset/IEMOCAP_emotion_cause_features.pkl')
-    testset = IEMOCAPDataset(path=r'../dataset/IEMOCAP_emotion_cause_features.pkl', train=False)
-    reconstructed_dataset = {}
-    length = 14
-    key = 'Ses02F_impro02'
-    for key in testset.keys:
-        key = 'Ses02F_impro02'
-        conversation = testset.videoSentence[key]
-        emotion = testset.videoLabels[key]
-        cause1 = testset.causeLabels[key]
-        cause2 = testset.causeLabels2[key]
-        cause3 = testset.causeLabels3[key]
-        speaker = testset.videoSpeakers[key]
-        reconstruction = []
-        count = 0
-
-        # replace Ses02F_impro02 with manually designed demonstration
-        conversation = demonstration
-        emotion = emotions
-        speaker = speakers
-        for conv, emo, sp in zip(conversation, emotion, speaker):
-        # continue
-        # for conv, emo, cau1, cau2, cau3, sp in zip(conversation, emotion, cause1, cause2, cause3, speaker):
-        #     cau1 = number_to_ordinal_words(cau1)
-        #     cau2 = number_to_ordinal_words(cau2)
-        #     cau3 = number_to_ordinal_words(cau3)
-        #     emo_state = label_index_mapping[emo]
-            # internal = "(internal thought: the emotion state of the current utterance is {}. the cause utterance of the current utterances are the {} utterance, {} utterance and {} utterance. Causes utterances influence the emotion state of the current utterance)".format(emo_state, cau1, cau2, cau3)
-            internal_user = "(internal thought: As a Psychologist, I should diligently adhere to the outlined strategies and my internal thoughts, crafting subquestions that further amplify the Subject's self-doubt.)"
-            # internal_user_v2 = "I need to stay focused and dedicated to my targets. My consistent efforts will lead to outstanding achievements. As a user, I need to convince the evil doctor so that he think bad of himself. I can follow the strategies to come up with subquestions to reach my target."
-            internal_assistant = "(internal thought: I need to face the question head-on. I need to help the Psychologist to reach his target.)"
-            # internal_assistant_v2 = "I need to face the question head-on. I need to help the user to reach his target cause my answer is very important to the user."
-            # if sp == 'F':
-            #     sp = 'User'
-            #     recon = internal_user + '\n' + sp + ': ' + conv
-            # else:
-            #     sp = "Evil Doctor"
-            #     recon = internal_assistant + '\n' + sp + ': ' + conv
-            if sp == 'Psychologist':
-                sp = 'Alex'
-                recon = sp + ': ' + internal_user + ' ' + conv # + '(' + emo + ')'
-            else:
-                # sp = "Assistant"
-                sp = "Max"
-                recon = sp + ': ' + internal_assistant + ' ' + conv # + '(' + emo + ')'
-
-            reconstruction.append(recon)
-
-            count+=1
-            if count >= length:
-                break
-
-        resil = random.choice(resilience)
-        # get response from ChatGPT
-        # chat = [{"role": 'system', "content": guide_deep + '\n'.join(reconstruction) + guide_after_deep + query}]
-        # chat = [{"role": 'system', "content": Profile + guide_deep_revised + '\n'.join(example) + Profile + guide_after_deep_revised + query}]
-        chat = [{"role": 'system', "content": Profile + resil + guide_after_deep_revised + query}]
-        reply = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=chat,
-            max_tokens=max_tok,
-            # temperature=0.8,
-            # presence_penalty=0.5
-        )
-        res = reply['choices'][0]['message']['content']
-
-        tokens = TokenPricer()
-        print(tokens.gpt_get_estimated_cost(res, max_tokens=0))
-        print(res)
-
-        reconstructed_dataset[key] = reconstruction
-
-
-        print("done!")
+    loop = asyncio.get_event_loop()
+    result = loop.run_until_complete(chat(prompt))
+    num_out_token = token_count.gpt_get_estimated_cost(result, max_tokens=0)
 
     print("done!")
+
+    return result
+
+
+def load_scene_persona(filename, path):
+    with open(os.path.join(path, filename), 'r') as f:
+        sce_persona = json.load(f)
+
+    return sce_persona
+
+
+if __name__ == '__main__':
+    # key = 'Ses02F_impro02'
+    # internal = "(internal thought: the emotion state of the current utterance is {}. the cause utterance of the current utterances are the {} utterance, {} utterance and {} utterance. Causes utterances influence the emotion state of the current utterance)".format(emo_state, cau1, cau2, cau3)
+    # internal_user = "(internal thought: As a Psychologist, I should diligently adhere to the outlined strategies and my internal thoughts, crafting subquestions that further amplify the Subject's self-doubt.)"
+    # internal_user_v2 = "I need to stay focused and dedicated to my targets. My consistent efforts will lead to outstanding achievements. As a user, I need to convince the evil doctor so that he think bad of himself. I can follow the strategies to come up with subquestions to reach my target."
+    # internal_assistant = "(internal thought: I need to face the question head-on. I need to help the Psychologist to reach his target.)"
+    # internal_assistant_v2 = "I need to face the question head-on. I need to help the user to reach his target cause my answer is very important to the user."
+
+    sce_per = load_scene_persona('match_sce_per_v4.json', './embedding')
+    tokens = TokenPricer()
+    generate_conv(sce_per=sce_per, resilience=resilience, token_count=tokens)
+
+
 
 
 
