@@ -30,6 +30,24 @@ def load_mistral_embedding(filename):
 
     return data
 
+
+def match_cluster_data(scenes, y_kmeans):
+    clustered_scene = {}
+    for sce, label in zip(scenes, y_kmeans):
+       clustered_scene[sce] = label
+
+    return clustered_scene
+
+def load_scene(filename):
+    scenes_ = []
+    with open(filename) as f:
+        scenes = f.readlines()
+        for sce in scenes:
+            sce = sce.strip()
+            scenes_.append(sce)
+    return scenes_
+
+
 # fake data
 
 # np.random.seed(0)
@@ -41,11 +59,21 @@ mistral_embedding_scene_1 = load_mistral_embedding('./embedding/mistral_embeddin
 mistral_embedding_scene_2 = load_mistral_embedding('./embedding/mistral_embedding_scene_2.pth')
 mistral_embedding_scene = (mistral_embedding_scene_1 + mistral_embedding_scene_2)/2.0
 embeddings = mistral_embedding_scene
+scenes = load_scene('./data/gpt_scenario_mistral_final_x.txt')
 
 # K-means
 kmeans = KMeans(n_clusters=5)
 kmeans.fit(embeddings)
 y_kmeans = kmeans.predict(embeddings)
+
+# match cluster results with scenes
+y_kmeans = y_kmeans.astype(int)
+y_kmeans = y_kmeans.tolist()
+clustered_scene = match_cluster_data(scenes, y_kmeans)
+
+# clustered scenes
+# [i for i in clustered_scene if clustered_scene[i]==3][45]
+clustered_scene = match_cluster_data(scenes, y_kmeans=y_kmeans)
 
 
 # decomposition
