@@ -48,6 +48,44 @@ def load_scene(filename):
     return scenes_
 
 
+def fine_grained_clustering(class_id, num_cluster=5, option='2D'):
+    class_index = [idx for idx, i in enumerate(clustered_scene) if clustered_scene[i] == class_id]
+    embeddings_class = embeddings[class_index]
+    # k-means step2
+    kmeans2 = KMeans(n_clusters=num_cluster)
+    kmeans2.fit(embeddings_class)
+    y_kmeans2 = kmeans2.predict(embeddings_class)
+
+    if option=='2D':
+        model = PCA(n_components=2)
+        lower_dim_embedding = model.fit_transform(embeddings_class)
+
+        plt.scatter(lower_dim_embedding[:, 0], lower_dim_embedding[:, 1], c=y_kmeans2, s=50, cmap='viridis')
+        # centers = kmeans.cluster_centers_
+        # plt.scatter(centers[:, 0], centers[:, 1], c='red', s=200, alpha=0.5)
+        plt.title("K-means Clustering")
+        plt.xlabel("Feature 1")
+        plt.ylabel("Feature 2")
+        plt.show()
+    elif option == '3D':
+
+        model = PCA(n_components=3)
+        lower_dim_embedding = model.fit_transform(embeddings_class)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        # plt.scatter(lower_dim_embedding[:, 0], lower_dim_embedding[:, 1], lower_dim_embedding[:,2], c=y_kmeans, cmap='viridis')
+        ax.scatter3D(lower_dim_embedding[:, 0], lower_dim_embedding[:,1], lower_dim_embedding[:,2], c=y_kmeans2, cmap='viridis')
+        plt.title("K-means Clustering")
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')
+        plt.show()
+
+
+    return
+
+
 # fake data
 
 # np.random.seed(0)
@@ -69,12 +107,11 @@ y_kmeans = kmeans.predict(embeddings)
 # match cluster results with scenes
 y_kmeans = y_kmeans.astype(int)
 y_kmeans = y_kmeans.tolist()
-clustered_scene = match_cluster_data(scenes, y_kmeans)
-
-# clustered scenes
 # [i for i in clustered_scene if clustered_scene[i]==3][45]
 clustered_scene = match_cluster_data(scenes, y_kmeans=y_kmeans)
 
+#fine-grained clustering
+# fine_grained_clustering(class_id=0, num_cluster=3, option='2D')
 
 # decomposition
 model = PCA(n_components=3)
@@ -88,7 +125,7 @@ lower_dim_embedding = model.fit_transform(embeddings)
 # plt.xlabel("Feature 1")
 # plt.ylabel("Feature 2")
 # plt.show()
-print('done!')
+# print('done!')
 
 
 # plot a 3D figure
@@ -102,3 +139,5 @@ ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 plt.show()
 print('done!')
+
+
