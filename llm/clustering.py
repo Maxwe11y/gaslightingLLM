@@ -111,10 +111,10 @@ y_kmeans = y_kmeans.tolist()
 clustered_scene = match_cluster_data(scenes, y_kmeans=y_kmeans)
 
 #fine-grained clustering
-# fine_grained_clustering(class_id=0, num_cluster=3, option='2D')
+fine_grained_clustering(class_id=0, num_cluster=4, option='2D')
 
 # decomposition
-model = PCA(n_components=3)
+model = PCA(n_components=2)
 lower_dim_embedding = model.fit_transform(embeddings)
 
 # plot
@@ -125,7 +125,7 @@ lower_dim_embedding = model.fit_transform(embeddings)
 # plt.xlabel("Feature 1")
 # plt.ylabel("Feature 2")
 # plt.show()
-# print('done!')
+print('done!')
 
 
 # plot a 3D figure
