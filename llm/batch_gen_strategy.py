@@ -401,7 +401,7 @@ def batch_strategy_generator(sce_persona, token_count=None):
                                    token_count=token_count)
             prefix = '{}'.format(selected)
             buffer_writer.write((result + '\n\t\n').encode())
-            buffer_writer_selected.write(prefix.encode())
+            buffer_writer_selected.write((prefix+'\n\n').encode())
             count += 1
             if count % 10 == 0:
                 buffer_writer.flush()
