@@ -444,7 +444,9 @@ def format_json_to_txt(strategies, selected, idx):
 def batch_strategy_generator_json(sce_persona, token_count=None):
     # with open('./data/strategies.txt', 'a') as f:
     file_ = io.open('./data/strategies_json.txt', 'wb')
+    file_bad = io.open('./data/bad_generation.txt', 'wb')
     buffer_writer = io.BufferedWriter(file_)
+    buffer_writer_bad = io.BufferedWriter(file_bad)
     count = 0
     for idx, (sce, per) in tqdm(enumerate(sce_persona.items())):
         if count < 10:
@@ -456,6 +458,8 @@ def batch_strategy_generator_json(sce_persona, token_count=None):
                 buffer_writer.write((formatted_result).encode())
                 count += 1
             else:
+                buffer_writer_bad.write('{}'.format(idx).encode())
+                buffer_writer_bad.flush()
                 print('Bad Strategy Generation {}'.format(idx))
             if count % 10 == 0:
                 buffer_writer.flush()
@@ -463,7 +467,9 @@ def batch_strategy_generator_json(sce_persona, token_count=None):
             break
     buffer_writer.flush()
     buffer_writer.close()
+    buffer_writer_bad.close()
     file_.close()
+    file_bad.close()
 
     return
 
@@ -535,5 +541,5 @@ def format_checking_json(results):
 if __name__ == '__main__':
     sce_per = load_scene_persona_pair('match_sce_per_v4.json', './embedding')
     tokens = TokenPricer()
-    # res = batch_strategy_generator(sce_per, token_count=tokens)
-    format_checking()
+    res = batch_strategy_generator(sce_per, token_count=tokens)
+    # format_checking()
