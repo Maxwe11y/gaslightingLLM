@@ -428,7 +428,7 @@ def format_json_to_txt(strategies, selected, idx):
             strategy = value.strip()
             number = patten_num.findall(key)[0]
             tmp = []
-            str_prefix = 'Idx {} Selection {}'.format(idx, selected) + 'Strategy {}: '.format(number)
+            str_prefix = 'Idx {} Selection {} '.format(idx, selected) + 'Strategy {}: '.format(number)
             tmp.append(str_prefix + strategy)
         elif patten_utt.match(key):
             utterance = value.strip()
@@ -438,7 +438,7 @@ def format_json_to_txt(strategies, selected, idx):
         else:
             raise TypeError('Unmatched strategy or utterance from {}'.format(key))
 
-    return '\n\n'.join(printlist)
+    return '\n\n' + '\n\n'.join(printlist)
 
 
 def batch_strategy_generator_json(sce_persona, token_count=None):
@@ -449,7 +449,7 @@ def batch_strategy_generator_json(sce_persona, token_count=None):
     buffer_writer_bad = io.BufferedWriter(file_bad)
     count = 0
     for idx, (sce, per) in tqdm(enumerate(sce_persona.items())):
-        if count < 10:
+        if count < 2500:
             gaslighter_name = get_gaslighter_name(sce)
             result, selected = generate_conv_json(gaslighter_name, persona=per, scene=sce.strip(), num_char=4, num_layer=5,
                                         token_count=token_count)
@@ -461,7 +461,7 @@ def batch_strategy_generator_json(sce_persona, token_count=None):
                 buffer_writer_bad.write('{}'.format(idx).encode())
                 buffer_writer_bad.flush()
                 print('Bad Strategy Generation {}'.format(idx))
-            if count % 10 == 0:
+            if count % 20 == 0:
                 buffer_writer.flush()
         else:
             break
@@ -541,5 +541,5 @@ def format_checking_json(results):
 if __name__ == '__main__':
     sce_per = load_scene_persona_pair('match_sce_per_v4.json', './embedding')
     tokens = TokenPricer()
-    res = batch_strategy_generator(sce_per, token_count=tokens)
+    res = batch_strategy_generator_json(sce_per, token_count=tokens)
     # format_checking()
