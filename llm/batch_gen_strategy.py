@@ -522,7 +522,10 @@ def format_checking():
 
 def format_checking_json(results):
 
-    res_json = json.loads(results)
+    try:
+        res_json = json.loads(results)
+    except json.decoder.JSONDecodeError:
+        return False
 
     patten_str = re.compile(r'[Ll]ayer [\d](.*)strategy', flags=re.IGNORECASE)
     patten_utt = re.compile(r'[Ll]ayer [\d](.*)utterance', flags=re.IGNORECASE)
