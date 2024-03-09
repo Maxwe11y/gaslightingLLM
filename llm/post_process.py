@@ -542,6 +542,27 @@ def process_selection():
     #     f.writelines('\n'.join(data_))
     # f.close()
     #
+
+    # path = './data/strategies_2K_first_v4.json'
+    # with open(path, 'r') as f:
+    #     data = json.load(f)
+    # f.close()
+    #
+    # with open('./data/selected_final.txt', 'r') as fx:
+    #     selected_data = fx.readlines()
+    # fx.close()
+    #
+    # print('done!')
+    # data_x = {}
+    # for i, j in zip(data, selected_data):
+    #     data_x[int(i)] = data[i]
+    #     data_x[int(i)].append(j.strip())
+    #
+    # with open('./data/strategies_2K_nonjson_v5.json', 'w') as f:
+    #     json.dump(data_x, f)
+    # f.close()
+
+
     print('done')
 
 

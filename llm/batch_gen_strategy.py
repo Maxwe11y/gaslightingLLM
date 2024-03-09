@@ -817,11 +817,95 @@ def post_process_v2():
     return printdict
 
 
+def examine_strategy():
+    # path = './data/strategies_2K_first_v4.json'
+    # with open(path, 'r') as f:
+    #     data = json.load(f)
+    # f.close()
+    #
+    # with open('./data/selected_final.txt', 'r') as fx:
+    #     selected_data = fx.readlines()
+    # fx.close()
+    #
+    # print('done!')
+    # data_x = {}
+    # for i, j in zip(data, selected_data):
+    #     data_x[int(i)] = data[i]
+    #     data_x[int(i)].append(j.strip())
+    #
+    # with open('./data/strategies_2K_nonjson_v5.json', 'w') as f:
+    #     json.dump(data_x, f)
+    # f.close()
+
+
+    with open('./data/strategies_2K_nonjson_v5.json', 'r') as f1:
+        data_nonjson = json.load(f1)
+
+    with open('./data/strategies_2K_json_v1.json', 'r') as f2:
+        data_json_v1 = json.load(f2)
+
+    with open('./data/strategies_2K_json_v2.json', 'r') as f3:
+        data_json_v2 = json.load(f3)
+    # pattern = re.compile(r'strategy \d: Obscuring', flags=re.IGNORECASE)
+    # pattern_num = re.compile(r'\d')
+    # count = 0
+    # count_x = 0
+    # count_index = []
+    # for i in data_nonjson:
+    #     items = data_nonjson[i]
+    #     count_item = 0
+    #     for item in items:
+    #         if not pattern_num.match(item):
+    #             if pattern.match(item):
+    #                 count+=1
+    #                 count_item+=1
+    #                 print(i)
+    #                 print(items[-1], item)
+    #                 count_index.append(i)
+    #     if count_item>0:
+    #         print('count_item', count_item)
+    #     if count_item == 1:
+    #         count_x+=1
+    #
+    # print(count_x)
+    # print(count)
+
+    pattern = re.compile(r'strategy_\d Obscuring', flags=re.IGNORECASE)
+    pattern2 = re.compile(r'encourage', flags=re.IGNORECASE)
+    pattern_num = re.compile(r'\d')
+    count = 0
+    count_x = 0
+    count_index = []
+    for i in data_json_v2:
+        items = data_json_v2[i]
+        count_item = 0
+        for it in items:
+            item = it[1]
+            if not pattern_num.match(item):
+                if pattern2.findall(item):
+                    count += 1
+                    count_item += 1
+                    print(i)
+                    print(it[-1], item)
+                    count_index.append(i)
+        if count_item > 0:
+            print('count_item', count_item)
+        if count_item == 1:
+            count_x += 1
+
+    print(count_x)
+    print(count)
+
+    print('done!')
+    return
+
+
 
 
 if __name__ == '__main__':
     sce_per = load_scene_persona_pair('match_sce_per_v4.json', './embedding')
     tokens = TokenPricer()
+    examine_strategy()
     # post_process_nonjson()
     # res = batch_strategy_generator(sce_per, token_count=tokens)
     # format_checking()
