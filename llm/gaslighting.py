@@ -215,7 +215,7 @@ def compose_prompt(psychologist_name, gaslighter_name, resilience):
 
     query = "Please fill the conversation with internal thoughts"
 
-    prompt = profile + resil_ + guide + '\n' + query
+    prompt = profile + resil_ + guide_deep + '\n' + query
 
 
     return prompt

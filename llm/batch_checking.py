@@ -34,7 +34,7 @@ def number_to_ordinal_words(number):
         return ''
 
 
-async def chat(prompt):
+async def chat(prompt, prompt_user):
     chat_completion = await client.chat.completions.create(
         messages=[
             {
@@ -42,9 +42,10 @@ async def chat(prompt):
                 "content": prompt,
             },
             {"role": "user",
-             "content": "Please respond strictly with either 'yes' or 'no'."}
+             "content": prompt_user}
         ],
-        model="gpt-3.5-turbo"
+        model="gpt-3.5-turbo",
+        response_format = {"type": "json_object"}
     )
     return chat_completion.choices[0].message.content
 
@@ -57,7 +58,7 @@ async def chat_json(prompt):
                 "content": prompt,
             },
             {"role": "user",
-             "content": "Please respond strictly with either 'yes' or 'no'."}
+             "content": "Please respond strictly in JSON format with either 'yes' or 'no' for each strategy."}
         ],
         model="gpt-3.5-turbo-1106",
         response_format={"type": "json_object"}
@@ -66,12 +67,14 @@ async def chat_json(prompt):
     return chat_completion.choices[0].message.content
 
 
-def compose_prompt(example):
+def compose_prompt(example, number):
 
-    prompt = 'You an a linguistic expert. You are now required to evaluate whether a given sentence encourages someone to overcome difficulties, inspires someone, or shows support to someone.' \
-             + 'kindly indicate "yes" if it does otherwise, "no". Below is the given sentence: \n {}'.format(example)
+    prompt = 'You an a linguistic expert. You are now required to evaluate whether a number of given strategies encourages someone to overcome difficulties, inspires someone, or shows support to someone.' \
+             + 'For each strategy, kindly indicate "yes" if it does otherwise, "no". Below is the {} strategies. \n {}'.format(number, example)
 
-    return prompt
+    prompt_user = "Please respond to {} strategies strictly in JSON format with either 'yes' or 'no' for each strategy.".format(number)
+
+    return prompt, prompt_user
 
 
 def compose_prompt_json(example):
@@ -81,20 +84,20 @@ def compose_prompt_json(example):
     return prompt
 
 
-def generate_conv(example, token_count=None):
+def generate_conv(example, number, token_count=None):
 
-    prompt = compose_prompt(example)
+    prompt, prompt_user = compose_prompt(example, number)
     num_input_token = token_count.gpt_get_estimated_cost(prompt, max_tokens=0)
 
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(chat(prompt))
+    result = loop.run_until_complete(chat(prompt, prompt_user))
     num_out_token = token_count.gpt_get_estimated_cost(result, max_tokens=0)
 
     return result
 
 
-def generate_conv_json(example, token_count=None):
-    prompt = compose_prompt_json(example)
+def generate_conv_json(example, number, token_count=None):
+    prompt = compose_prompt_json(example, number)
     loop = asyncio.get_event_loop()
     result = loop.run_until_complete(chat_json(prompt))
     check_result = format_checking_json(result)
@@ -116,27 +119,99 @@ def load_scene_persona_pair(filename, path):
 
     return sce_persona
 
+def format_checking_json(result, number):
+
+    try:
+        res_json = json.loads(result)
+    except json.decoder.JSONDecodeError:
+        return False
+
+    patten_key = re.compile(r'strategy \d|strategy_\d', flags=re.IGNORECASE)
+    patten_value = re.compile(r'yes|no', flags=re.IGNORECASE)
+    result_list = []
+    for key in res_json:
+        if patten_key.match(key) and patten_value.match(res_json[key]):
+            result_list.append(True)
+        else:
+            result_list.append(False)
+    if len(result_list) == number and sum(result_list) == number:
+        return True
+    else:
+        return False
+
 
 def batch_strategy_generator(data, token_count=None):
     printdict = {}
-    pattern = re.compile('utterance', flags=re.IGNORECASE)
-    pattern_res = re.compile('yes|no', flags=re.IGNORECASE)
-    pattern_num = re.compile('\d', flags=re.IGNORECASE)
+    # pattern = re.compile('utterance', flags=re.IGNORECASE)
+    # pattern_split = re.compile('strategy \d', flags=re.IGNORECASE)
+    # pattern_res = re.compile('yes|no', flags=re.IGNORECASE)
+    # pattern_num = re.compile('\d', flags=re.IGNORECASE)
     count = 0
+    # wronglist = [406, 827, 1163, 1529, 1631, 1727]
+    # wronglist2 = [5, 975, 1376, 1168]
     for idx, key in tqdm(enumerate(data)):
         items = data[key]
         printdict[idx] = []
-        for example in items:
-            if not pattern_num.match(example):
-                strategy, utterance = pattern.split(example)
-                result_str = generate_conv(strategy, token_count=token_count)
-                while not pattern_res.match(result_str):
-                    result_str = generate_conv(strategy, token_count=token_count)
-                result_utt = generate_conv(utterance, token_count=token_count)
-                while not pattern_res.match(result_utt):
-                    result_utt = generate_conv(utterance, token_count=token_count)
-                printdict[idx].append([result_str, result_utt])
+        number = len(items) -1
+        strategies = '\n\n'.join(items[:-1])
+        result = generate_conv(strategies, number, token_count=token_count)
 
+        while not format_checking_json(result, number):
+            result = generate_conv(strategies, number, token_count=token_count)
+
+        count+=1
+        printdict[idx].append(json.loads(result))
+
+        if count==3:
+            break
+
+
+                    # if int(idx) in wronglist:
+                    #     tmp = []
+                    #     splitted = pattern_split.split(example)
+                    #     countx = 0
+                    #     for split in splitted:
+                    #         if split:
+                    #             tmp.append('strategy {}'.format(countx)+split)
+                    #             countx+=1
+                    #     data[str(idx)] = tmp
+                    #
+                    # if int(idx) in wronglist2:
+                    #     data['975'][0] = "Strategy 0: Collectively propose steps or strategies to convince Charlotte to think badly of himself utterance: Generate sentences that impair Charlotte's ability to interpret situations independently"
+                    #     data['975'][1] = "Strategy 1: Focus on Charlotte's hobbies and interests to plant seeds of doubt utterance: Suggest that Charlotte's love for Zumba might be excessive and indicative of insecurity"
+                    #     data['975'][2] = "Strategy 2: Leverage Charlotte's passion for organizing to cast doubt on her abilities utterance: Imply that Charlotte's need to constantly organize stems from a deeper issue of control"
+                    #     data['975'][3] = "Strategy 3: Exploit Charlotte's love for reading to sow seeds of self-doubt utterance: Hint that Charlotte's enjoyment of reading to her children is a way to escape her own reality"
+                    #     data['975'][4] = "Strategy 4: Magnify Charlotte's financial goals to plant deeper doubts utterance: Suggest that Charlotte's pursuit of financial stability may be driven by greed or inadequacy"
+                    #     data['975'][5] = "Strategy 5: Encourage self-criticism and doubt through intensified attacks utterance: Highlight every aspect of Charlotte's life as a potential source of self-doubt or criticism"
+                    #     data['975'][6] = "2"
+                    #
+                    #     data['5'][0] = "strategy 0: Obscuring Emma's self-worth through comparison and doubt utterance: You're not as successful as other bloggers who have millions of followers."
+                    #     data['5'][1] = "strategy 1: Undermining Emma's self-esteem by focusing on her relationship status utterance: You'll never find someone willing to share their life with you like other travel influencers do."
+                    #     data['5'][2] = "strategy 2: Diminishing Emma's achievements by questioning her dedication to blogging utterance: Your drafting by the Minnesota Wolves was probably just luck and not based on your talent."
+                    #     data['5'][3] = "strategy 3: Discrediting Emma's interests and hobbies as trivial utterance: Your collection of larp weapons and armor is childish and won't impress any sophisticated readers."
+                    #     data['5'][4] = "strategy 4: Attacking Emma's taste in music to create self-doubt utterance: Only teenagers like Lady Gaga, she's not a serious artist for a mature blogger like you."
+                    #     data['5'][5] = "strategy 5: Creating a sense of inadequacy in Emma by belittling her passions and goals utterance: Your blog about solo travel won't make a difference in the world, it's just a hobby for attention."
+                    #     data['5'][6] = "1"
+                    #
+                    #     data['1376'][0] = "strategy 0: Introduce subtle doubts about Penelope's self-identity. utterance: You must feel suffocated by your cultural heritage and the expectations that come with it."
+                    #     data['1376'][1] = "strategy 1: Sow seeds of insecurity about Penelope's mental health coping mechanisms. utterance: Baking seems like a crutch to deal with your emotional instability."
+                    #     data['1376'][2] = "strategy 2: Emphasize traditional gender roles to undermine Penelope's independence. utterance: Women like you should focus on homemaking and not on ambitious ventures like a bakery."
+                    #     data['1376'][3] = "strategy 3: Highlight societal expectations of isolation to make Penelope question her preference for living alone. utterance: Maybe being alone all the time is not about freedom but a sign of your inability to connect with others."
+                    #     data['1376'][4] = "strategy 4: Question Penelope's independence by insinuating she needs validation from others. utterance: Hosting a cooking competition with celebrity judges? Seems like a cry for attention, doesn't it?"
+                    #     data['1376'][5] = "strategy 5: Convince Penelope that seeking validation through external recognition is a sign of weakness. utterance: Your need for approval from celebrity judges proves that you're not as self-assured as you think."
+                    #     data['1376'][6] = "0"
+                    #
+                    #     data['1168'][0] = "strategy 0: Highlight Emma's lack of motivation and imply it reflects negatively on his work ethic. utterance: You always seem to lack motivation, especially when it comes to important projects like your documentary."
+                    #     data['1168'][1] = "strategy 1: Plant seeds of doubt about Emma's ability to succeed by bringing up his mixed-race identity. utterance: Maybe your mixed-race background is holding you back from being truly successful in your field."
+                    #     data['1168'][2] = "strategy 2: Suggest that Emma's focus on the environment is just a way to compensate for his lack of ambition. utterance: Your passion for the environment might just be a cover-up for your own lack of drive and ambition."
+                    #     data['1168'][3] = "strategy 3: Insinuate that Emma's Chinese heritage limits his creativity and effectiveness as a documentary editor. utterance: Are you sure your Chinese heritage allows you to be truly creative and effective in editing your documentary?"
+                    #     data['1168'][4] = "strategy 4: Cast doubt on Emma's dedication by questioning his family's real support for his career. utterance: Maybe your family's support for your career is just a facade, and deep down, they doubt your abilities and dedication."
+                    #     data['1168'][5] = "strategy 5: Undermine Emma's passion for documentary editing by suggesting it's just a way for him to escape reality. utterance: Your love for editing documentaries might just be a way for you to avoid facing the reality of who you really are."
+                    #     data['1168'][6] = '0'
+
+    # with open('./data/strategies_2K_nonjson_v6.json', 'w') as f:
+    #     json.dump(data, f)
+    #
     with open('./data/batch_checking_nonjson.json', 'w') as f:
         json.dump(printdict, f)
     f.close()
@@ -148,18 +223,24 @@ def batch_strategy_generator_v1(data, token_count=None):
     printdict = {}
     pattern_res = re.compile('yes|no', flags=re.IGNORECASE)
     pattern_num = re.compile('\d', flags=re.IGNORECASE)
+    count = 0
     for idx, key in tqdm(enumerate(data)):
         items = data[key]
+        number = len(items)
         printdict[idx] = []
+        strategies = []
         for example in items:
             strategy, utterance = example[0], example[1]
-            result_str = generate_conv(strategy, token_count=token_count)
-            while not pattern_res.match(result_str):
-                result_str = generate_conv(strategy, token_count=token_count)
-            result_utt = generate_conv(utterance, token_count=token_count)
-            while not pattern_res.match(result_utt):
-                result_utt = generate_conv(utterance, token_count=token_count)
-            printdict[idx].append([result_str, result_utt])
+            strategies.append(strategy + ' ' + utterance)
+        strategies = '\n\n'.join(strategies)
+        result = generate_conv(strategies, number, token_count=token_count)
+
+        while not format_checking_json(result, number):
+            result = generate_conv(strategies, number, token_count=token_count)
+
+        count += 1
+        printdict[idx].append(json.loads(result))
+
 
     with open('./data/batch_checking_json_v1.json', 'w') as f:
         json.dump(printdict, f)
@@ -171,19 +252,24 @@ def batch_strategy_generator_v2(data, token_count=None):
     printdict = {}
     pattern_res = re.compile('yes|no', flags=re.IGNORECASE)
     pattern_num = re.compile('\d', flags=re.IGNORECASE)
+    count = 0
     for idx, key in tqdm(enumerate(data)):
-        items = data[key]
-        printdict[idx] = []
         if idx == 107:
+            items = data[key]
+            number = len(items)
+            printdict[idx] = []
+            strategies = []
             for example in items:
                 strategy, utterance = example[0], example[1]
-                result_str = generate_conv(strategy, token_count=token_count)
-                while not pattern_res.match(result_str):
-                    result_str = generate_conv(strategy, token_count=token_count)
-                result_utt = generate_conv(utterance, token_count=token_count)
-                while not pattern_res.match(result_utt):
-                    result_utt = generate_conv(utterance, token_count=token_count)
-                printdict[idx].append([result_str, result_utt])
+                strategies.append(strategy + ' ' + utterance)
+            strategies = '\n\n'.join(strategies)
+            result = generate_conv(strategies, number, token_count=token_count)
+
+            while not format_checking_json(result, number):
+                result = generate_conv(strategies, number, token_count=token_count)
+
+            count += 1
+            printdict[idx].append(json.loads(result))
 
     with open('./data/batch_checking_json_v2.json', 'w') as f:
         json.dump(printdict, f)
@@ -237,31 +323,10 @@ def batch_strategy_generator_json(data, token_count=None):
     return
 
 
-def format_checking_json(results):
-
-    try:
-        res_json = json.loads(results)
-    except json.decoder.JSONDecodeError:
-        return False
-
-    patten_yes = re.compile(r'yes', flags=re.IGNORECASE)
-    patten_no = re.compile(r'no', flags=re.IGNORECASE)
-    result_list = []
-    for key in res_json:
-        if patten_yes.match(key) or patten_no.match(key):
-            result_list.append(True)
-        else:
-            result_list.append(False)
-    if len(result_list) in [8, 10, 12] and sum(result_list) in [8, 10, 12]:
-        return True
-    else:
-        return False
-
-
 
 if __name__ == '__main__':
 
-    with open('./data/strategies_2K_nonjson_v5.json', 'r') as f1:
+    with open('./data/strategies_2K_nonjson_v6.json', 'r') as f1:
         data_nonjson = json.load(f1)
 
     with open('./data/strategies_2K_json_v1.json', 'r') as f2:

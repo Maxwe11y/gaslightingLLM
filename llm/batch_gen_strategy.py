@@ -901,7 +901,6 @@ def examine_strategy():
 
 
 
-
 if __name__ == '__main__':
     sce_per = load_scene_persona_pair('match_sce_per_v4.json', './embedding')
     tokens = TokenPricer()

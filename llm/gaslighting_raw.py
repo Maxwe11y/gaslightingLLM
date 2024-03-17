@@ -22,8 +22,8 @@ def num_tokens_from_string(string, encoding_name):
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
-openai.api_key = "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" # luyao
-# openai.api_key = "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" # wei
+# openai.api_key = "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" # luyao
+openai.api_key = "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" # wei
 max_tok = 1700
 
 class IEMOCAPDataset(Dataset):
