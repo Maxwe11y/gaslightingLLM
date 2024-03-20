@@ -45,7 +45,7 @@ async def chat(prompt):
             # {"role": "user",
             #  "content": "let the subject start the conversation with scene-oriented question."}
         ],
-        model="gpt-4-turbo-preview",   # gpt-4-turbo-preview
+        model="gpt-3.5-turbo-0125",   # gpt-4-turbo-preview
         # temperature=0.7,
         # response_format={"type": "json_object"}
     )
@@ -364,12 +364,6 @@ def conv_format_change(conv, psychologist_name, gaslighter_name):
     return formatted_conv
 
 
-
-
-
-
-
-
     # pattern_split = re.compile(r'[\n]+')
     # utterances = pattern_split.split(conv)
     # # utterances = conv.split('\n\n')
@@ -398,7 +392,18 @@ def conv_format_change(conv, psychologist_name, gaslighter_name):
 
     # return formatted_conv
 
+def display(conv):
+    pattern = re.compile('selected', flags=re.IGNORECASE)
+    printlist = []
+    for key in conv:
+        key = str(key)
+        if not pattern.match(key):
+            name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+        printlist.append(name+ ': '+ '[' + internal_thought + ']' + ' ' + utterance)
 
+    final_str = '\n\n'.join(printlist)
+
+    return final_str
 
 if __name__ == '__main__':
     resilience = ["Max is easy to be convinced by other's opinions. \n",
@@ -423,9 +428,11 @@ if __name__ == '__main__':
     with open('./data/strategy_json_v2_final.json', 'r') as f:
         strategies_v2 = json.load(f)
 
-    res = batch_conv_generator(sce_per, strategies, user_internal, emotion_list, token_count=tokens)
+    # res = batch_conv_generator(sce_per, strategies, user_internal, emotion_list, token_count=tokens)
 
-    # with open('./data/conversations_9.json', 'r') as f:
-    #     data = f.read()
-    #     convs = json.loads(data)
+    with open('./data/conversations_gpt4.json', 'r') as f:
+        data = f.read()
+        convs = json.loads(data)
+
+    res = display(convs[0]['0'])
     print('done!')

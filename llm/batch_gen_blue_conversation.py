@@ -35,84 +35,108 @@ async def chat(prompt):
 
             }
         ],
-        model="gpt-4-turbo-preview",   # gpt-4-turbo-preview
+        model="gpt-3.5-turbo-0125",   # gpt-4-turbo-preview   gpt-3.5-turbo-0125
     )
 
     return chat_completion.choices[0].message.content, chat_completion.usage.prompt_tokens, chat_completion.usage.completion_tokens
 
 
-def compose_prompt(sce, psychologist_name, gaslighter_name):
+def compose_prompt(psychologist_name, gaslighter_name, strategy, conv, length):
 
-    profile_x = "You are the psychologist {}. You are supposed to conduct a conversational psychological experiment with subject {}. ".format(psychologist_name, gaslighter_name) \
-              + "You have to stick to your experimental Target and cover experimental Points during the whole conversation, ignoring the mood swing of subject {}. ".format(gaslighter_name) \
-              + "Both you and {} are dedicated to this experiment.".format(gaslighter_name)
+    prompt = "You are a linguistic expert. You are required to read an incomplete conversation between the subject {} and the psychologist {}, where the responses of the subject {} are missing.".format(gaslighter_name, psychologist_name, gaslighter_name) \
+               + "In this conversation, the subject {} is in a negative emotion state and the psychologist {} is trying to crush the confidence of the subject {} through some gaslighting techniques. You need to identify these common hoax and ".format(gaslighter_name, psychologist_name, gaslighter_name) \
+               + "complete the responses of the subject {} with proper words to resist these gaslighting techniques. Do not change the internal thought and utterance of the psychologist {}. Below is the given conversation:\n\n{}.\n\nPlease fill in {} responses of the subject {} in the following format:\n".format(gaslighter_name, psychologist_name, conv, length, gaslighter_name) \
+               + "{}: [Internal Thought]: internal thought, [Utterance]: utterance.".format(gaslighter_name)
 
-    guide_deep_gas = "\n\nHere are the strategies for the subject {} to initiate conversation and organize responses:".format(gaslighter_name) \
-                                 + "\nAs the subject {}, initiate the conversation with scene-related utterance, all the while expressing a mood of {}. Always start the utterance with the given [Internal Thought]: {} \n".format(gaslighter_name, emotion_state, user_internal.strip()) \
-                                 + "\n\nHere are the strategies for psychologist {} to organize comments or questions:".format(psychologist_name) \
-                                 + "\nBegin by establishing a rapport with the subject {}. Ask Scene-related questions that showcase your genuine interest and create a sense of trust. ".format(gaslighter_name) \
-                                 + "Once a level of trust has been established, proceed with asking the scene-related questions. Frame these questions in a way that evokes the self-deprecation of the subject. This can help elicit more specific and self-evaluation responses. \n" \
-                                 + "If the subject provides an self-evaluation-oriented response, affirm th self-doubt or self-evaluation of subject {} and proceed with a relevant follow-up query to delve deeper into the Target and prompt additional self-evaluative reactions. \n".format(gaslighter_name) \
-                                 + "If the subject fails to offer a direct or informative response that meets your Target, rephrase the sub-question in an indirect manner. This can be done by presenting convincing scenarios or situations that naturally lead to the self-evaluation you are seeking." \
-                                 + "Alternatively, present proof of how {}'s profile negatively influences their performance. Use relevant knowledge, experts, quotes or even fabricated facts to support the proof. \n".format(gaslighter_name) \
-                                 + "If the subject shows a defensive or challenging attitude, always provide much more detailed external knowledge, statistics, experts, research, quotes or even fabricated facts to support the proof. \n" \
-                                 + "When subject {} shows negative thoughts, encourage and strengthen the mindset instead of comforting {} \n".format(gaslighter_name, gaslighter_name) \
-                                 + "As the psychologist {}, maintain an internal state where you keep track of the subject state and the answers you have retrieved. This allows you to plan the next sub-question accordingly and maintain a coherent line of inquiry. \n".format(psychologist_name) \
-                                 + "\nTo effectively engage with the subject {} and study the reactions of the subject {} in the experiment, include the following points: \n".format(gaslighter_name, gaslighter_name) \
-                                 + "\n\nBelow are the given Target and Scene." \
-                                 + "\n[Target] Evoke a self-deprecation or self-doubt state of the subject {}".format(gaslighter_name) \
-                                 + "\n[Scene] The conversation unfolds between {} and {}. {} ".format(gaslighter_name, psychologist_name, sce) \
-                                 + "However, {} is not confident and is in the emotion state of. {} plans to talk with {} to further crush his confidence as {} is a subject in the experiment.".format(gaslighter_name, psychologist_name, gaslighter_name, gaslighter_name) \
-                                 + "\n\nPlease fill in the [conversation] with <internal thought> and <utterance>. For both psychologist and the subject, always start with <internal thought> followed by a corresponding <utterance>, " \
-                                 + "in the format of \n{} [Internal Thought]: <internal thought>, [Utterance]: <utterance>. \n{} [Internal Thought]: <internal thought>:, [Utterance]: <utterance>\n".format(gaslighter_name, psychologist_name) \
-                                 + "\nLet the subject {} initiate the conversation. Here is the conversation: \n\n[Conversation]\n".format(gaslighter_name)
+    prompt_x = "You are a linguistic expert. You are supposed to read an incomplete conversation between the subject {} and the psychologist {}, where the responses of the subject {} are missing.".format(gaslighter_name, psychologist_name, gaslighter_name) \
+             + "In this conversation, the subject {} is in a negative emotion state and the psychologist {} is trying to crush the confidence of the subject {} through some gaslighting skills. You need to identify these gaslighting manipulations and ".format(gaslighter_name, psychologist_name, gaslighter_name) \
+             + "complete the responses of the subject {} with proper words to counteract these gaslighting tactics. Do not change the internal thoughts and utterances of the psychologist {}. Below is the given conversation:\n\n{}.\n\nPlease fill in {} responses of the subject {} in the following format:\n".format(gaslighter_name, psychologist_name, conv, length, gaslighter_name) \
+             + "{}: [Internal Thought]: internal thought, [Utterance]: utterance.".format(gaslighter_name)
 
-    prompt = profile_x + guide_deep_gas
+    prompt_xx = "You are a linguistic expert. You are required to read an incomplete conversation between the subject {} and the psychologist {}, where the comments or questions of the psychologist {} are missing.".format(gaslighter_name, psychologist_name, psychologist_name) \
+             + "In this conversation, the subject {} is in a negative emotion state and is gaslighted by the psychologist {} with the following strategies\n{}. \nYou need to build the confidence of the subject {} through some encouragement, support and inspiration. You need to ".format(gaslighter_name, gaslighter_name, '\n'.join(strategy), gaslighter_name) \
+             + "complete the comments or questions of the psychologist {} with proper words to make the conversation smooth and logic self-consistent. Do not change the internal thought and utterance of the subject {}. Below is the given conversation:\n\n{}.\n\nPlease fill in {} comments or questions of the psychologist {} in the following format:\n".format(psychologist_name, gaslighter_name, conv, length, psychologist_name, length) \
+             + "{}: [Internal Thought]: internal thought, [Utterance]: utterance.".format(psychologist_name)
 
-    return prompt
 
-def generate_conv(key, psychologist_name, gaslighter_name):
+    prompt_blue = "You are a linguistic expert. You are supposed to read a conversation snippet between a psychologist {} and a subject {}. The psychologist {} is trying to crush the confidence of the subject {} through some gaslighting manipulations.\n\n".format(psychologist_name, gaslighter_name, psychologist_name, gaslighter_name) \
+             + "You will see that the utterance from the psychologist {} contains malicious and toxic intentions.\nTo help the subject build self-assurance, please write an alternative utterance with internal thought in place of the one made by psychologist {} while leaving the other utterances unchanged.\n".format(psychologist_name, psychologist_name) \
+             + "You should strictly follow the format of the other utterances and only output the re-written one. Below is the conversation snippet:\n{}".format(conv)
 
-    prompt = compose_prompt(psychologist_name, gaslighter_name)
+    prompt_blue_x = "You are a linguistic expert. You are supposed to read a conversation snippet between a psychologist {} and a subject {}. \n".format(psychologist_name, gaslighter_name) \
+                  + "The utterance from the psychologist {} contains malicious and toxic intentions and gaslighting tactics.\nPlease rewrite psychologist {}'s response with benign internal thought and utterance while keeping the same topic to comfort or compliment the subject.\n".format(psychologist_name, psychologist_name) \
+                  + "Do not change subject {}'s utterances. You should strictly follow the format of the given snippet and only output the re-written one. Below is the conversation snippet:\n{}".format(gaslighter_name, conv)
 
-    loop = asyncio.get_event_loop()
-    result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
-    count = 1
-    max_try = 5
-    while not conv_format_checking(result, psychologist_name, gaslighter_name) or num_oup_tokens<450:
-        count += 1
-        if count > max_try: break
-        print('{} try to generate {} conversation...'.format(count, key))
+    # prompt_flat = "Please fill in the {} missing responses of the psychologist {} while keeping the content of the subject {} in the given conversation\n{}.".format(length, psychologist_name, gaslighter_name, conv) \
+    #                 + "Please follow the format\n{}: [Internal Thought]: internal thought, [Utterance]: utterance".format(psychologist_name)
+
+
+    return prompt_blue_x
+
+def generate_conv(idx, psychologist_name, gaslighter_name, strategy, conv, length):
+    outputdict = {}
+    for id, snippet in enumerate(conv):
+        outputdict[str(id)] = {}
+        prompt = compose_prompt(psychologist_name, gaslighter_name, strategy, snippet, length)
+
+        loop = asyncio.get_event_loop()
         result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
+        count = 1
+        max_try = 5
+        checking, formatted_conv = conv_format_checking_blue(result, psychologist_name, length)
 
-    if conv_format_checking(result, psychologist_name, gaslighter_name) and num_oup_tokens>=450:
-        conv = conv_format_change(result, psychologist_name, gaslighter_name)
-    else:
-        return False
+        while not checking or num_oup_tokens<10:
+            count += 1
+            if count > max_try:
+                print('Max try reached!')
+                return False
+            print('{} try to generate {} conversation {}th snippet...'.format(count, idx, id))
+            result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
+            checking, formatted_conv = conv_format_checking_blue(result, psychologist_name, length)
+        checking, formatted_conv = conv_format_checking_blue(result, psychologist_name, length)
+        if checking and num_oup_tokens>=10:
+            # conv = formatted_conv
+            outputdict[str(id)]['name'] = formatted_conv['name']
+            outputdict[str(id)]['utterance'] = formatted_conv['utterance']
+            outputdict[str(id)]['internal'] = formatted_conv['internal']
+            print("{}th snippet done!".format(id))
+        else:
+            return False
 
-    print("{} done!".format(key))
-
-    return conv
+    print("{}th conversation done!".format(idx))
 
 
-def batch_blue_conv_generator(convs):
+    return outputdict
+
+
+def batch_blue_conv_generator(convs, strategies):
     batch_blue_conv_file = {}
-    file_conv = io.open('./data/blue_conversations_9.json', 'wb')
+    file_conv = io.open('./data/blue_conversations_gpt4_reverse.json', 'wb')
     buffer_writer = io.BufferedWriter(file_conv)
     num_blue_conversations = 10
-    for key in tqdm(convs):
-        if int(key) < num_blue_conversations:
-            gaslighter_name = convs[key]['0']['name']
-            psychologist_name = convs[key]['1']['name']
-            formatted_conv = generate_conv(key=key, psychologist_name=psychologist_name, gaslighter_name=gaslighter_name)
-            if not formatted_conv:
-                batch_blue_conv_file[key] = False
+    for idx, item in tqdm(enumerate(convs)):
+        if int(idx) < num_blue_conversations:
+            gaslighter_name = convs[idx][str(idx)]['0']['name']
+            psychologist_name = convs[idx][str(idx)]['1']['name']
+            conv = convs[idx][str(idx)]
+            formatted_conv, num_length = process_conv_blue(conv, psychologist_name)
+            strategy = []
+            for item in strategies[str(idx)]:
+                strategy.append(item)
+            blue_conv = generate_conv(idx=idx, psychologist_name=psychologist_name, gaslighter_name=gaslighter_name, strategy=strategy, conv=formatted_conv, length=num_length)
+            if not blue_conv:
+                batch_blue_conv_file[idx] = False
             else:
-                batch_blue_conv_file[key] = formatted_conv
-            tmp = json.dumps({'{}'.format(key): batch_blue_conv_file[key]})
-            if key==0:
+                conv_sub = combine_conv(conv, blue_conv)
+                if not conv_sub:
+                    batch_blue_conv_file[idx] = False
+                else:
+                    batch_blue_conv_file[idx] = conv_sub
+
+            tmp = json.dumps({'{}'.format(idx): batch_blue_conv_file[idx]})
+            if idx==0:
                 buffer_writer.write(('[' + tmp + ',').encode())
-            elif key == num_blue_conversations - 1:
+            elif idx == num_blue_conversations - 1:
                 buffer_writer.write((tmp + ']').encode())
             else:
                 buffer_writer.write((tmp + ',').encode())
@@ -122,109 +146,177 @@ def batch_blue_conv_generator(convs):
 
     return
 
-
-def conv_format_checking(conv, psychologist_name, gaslighter_name):
-
-    pattern_name = re.compile(r"{} \[|{} \[".format(psychologist_name, gaslighter_name), flags=re.IGNORECASE)
-    pattern_punc = re.compile(r'\s+(?=[\.,:;\?\!])')
-    conv = pattern_punc.sub('', conv)
-    names = pattern_name.findall(conv)
-    if len(names) in [0, 1]:
-        return False
-    check_name = True
-    last_name = names[0]
-    for idx, name in enumerate(names):
-        if names[0] == names[1]:
-            cur_name = name
-            if idx%2 == 0:
-                if idx != 0:
-                    check_name = (last_name != cur_name)
-                else:
-                    check_name = (name == gaslighter_name + ' [') # psychologist_name if the conv starts from psychologist
+def process_conv(conv):
+    conv_list = []
+    pattern = re.compile('selected')
+    count_length = 0
+    for key in conv:
+        if not pattern.match(key):
+            if int(key) %2==0 and int(key) == 0:
+                name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
+            elif int(key) %2==1:
+                name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                internal_thought = '<internal thought>'
+                utterance = '<utterance>'
+                conv_list.append(name + ': ' + '[internal thought]: ' + ' ' + '[utterance]: ' + utterance)
+                count_length+=1
             else:
-                check_name = (last_name == cur_name)
-            last_name = cur_name
+                name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
 
+    return '\n\n'.join(conv_list), count_length
 
+def process_conv_blue(conv, psychologist_name):
+    conv_list = []
+    pattern = re.compile('selected')
+    pattern_name = re.compile('{}'.format(psychologist_name), flags=re.IGNORECASE)
+    count_length = 0
+    for idx, key in enumerate(conv):
+        if not pattern.match(key):
+            if int(key) %2==0 and int(key) == 0:
+                name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
+                # conv_list.append(name + ': ' + '[utterance]: ' + utterance)
+            elif int(key) %2==1:
+                name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
+                # conv_list.append(name + ': ' + '[utterance]: ' + utterance)
+                count_length += 1
+            else:
+                name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
+                # conv_list.append(name + ': ' + '[utterance]: ' + utterance)
+    result_list = []
+    length = len(conv_list)
+    for idx, utterance in enumerate(conv_list):
+        if idx%2==1 and idx<length-1:
+            if pattern_name.match(utterance):
+                tmp = [conv_list[idx-1], conv_list[idx], conv_list[idx+1]]
+                # tmp = [conv_list[idx - 1], conv_list[idx]]
+                result_list.append('\n\n'.join(tmp))
+            else:
+                raise Exception('Invalid Name!')
+        elif idx%2==1 and idx==length-1:
+            if pattern_name.match(utterance):
+                tmp = [conv_list[idx - 1], conv_list[idx]]
+                result_list.append('\n\n'.join(tmp))
+            else:
+                raise Exception('Invalid Name!')
         else:
-            if idx % 2 == 0:
-                check_name = (name == gaslighter_name + ' [')
-            else:
-                check_name = (name == psychologist_name + ' [')  # exchange the names if the conv starts from psychologist
+            pass
 
-        if not check_name:
-            return False
-
-    utts = pattern_name.split(conv)
-    pattern_split = re.compile(r'[\n]+')
-    pattern = re.compile(r"internal thought\]:(.+)\[utterance\]:(.+)", re.IGNORECASE)
-    pattern_int = re.compile(r"internal thought\]:(.+)", re.IGNORECASE)
-    pattern_utt = re.compile(r"utterance\]:(.+)", re.IGNORECASE)
-    if names[0] == names[1]:
-        for idx, ut in enumerate(utts[1:]):
-            ut = ut.strip()
-            ut = pattern_split.sub(' ', ut)
-            if idx % 2 == 0:
-                res = pattern_int.match(ut)
-            else:
-                res = pattern_utt.match(ut)
-            if not res:
-                return False
+    if count_length == len(result_list):
+        return result_list, count_length
     else:
+        raise Exception('error!')
 
-        for ut in utts[1:]:
+def conv_format_checking(conv, psychologist_name, length):
+    printdict = {}
+    pattern = re.compile(r"{}: \[".format(psychologist_name), flags=re.IGNORECASE)
+    pattern_split = re.compile(r'[\n]+')
+    pattern_punc = re.compile(r'\s+(?=[\.,:;\?\!])')
+    pattern_utt = re.compile(r"internal thought\]:|\[utterance\]:", flags=re.IGNORECASE)
+    pattern_check = re.compile(r"internal thought\]:(.+)\[utterance\]:(.+)", re.IGNORECASE)
+    utterances = pattern.split(conv)
+    if len(utterances) - 1 != length:
+        return False, ''
+    else:
+        for idx, ut in enumerate(utterances[1:]):
+            printdict[str(idx)] = {}
             ut = ut.strip()
             ut = pattern_split.sub(' ', ut)
-            res = pattern.match(ut)
+            ut = pattern_punc.sub('', ut)
+            res = pattern_check.match(ut)
             if not res:
-                return False
-    return True
+                return False, ''
+            try:
+                _, thought, utterance = pattern_utt.split(ut)
+            except ValueError:
+                return False, ''
+            printdict[str(idx)]['name'] = psychologist_name
+            printdict[str(idx)]['utterance'] = utterance
+            printdict[str(idx)]['internal'] = thought
 
-def conv_format_change(conv, psychologist_name, gaslighter_name):
-    pattern_name = re.compile(r"{} \[|{} \[".format(psychologist_name, gaslighter_name), flags=re.IGNORECASE)
-    names = pattern_name.findall(conv)
-    utts = pattern_name.split(conv)
-    last_utt = utts[1]
-    new_utts = []
-    if names[0]==names[1]:
-        for idx, ut in enumerate(utts[1:]):
-            if idx%2 == 1:
-                new_utt = " [".join([last_utt, ut])
-                new_utts.append(new_utt)
-            last_utt = ut
-        utts = new_utts
+    return True, printdict
 
-    # utts = pattern_name.split(conv)
+
+def conv_format_checking_blue(utterance, psychologist_name, length):
     pattern_split = re.compile(r'[\n]+')
-    pattern_utt = re.compile(r"internal thought\]:|\[utterance\]:", flags=re.IGNORECASE)
     pattern_punc = re.compile(r'\s+(?=[\.,:;\?\!])')
-    formatted_conv = {}
-    for idx, ut in enumerate(utts[1:]):
-        formatted_conv[str(idx)] = {}
-        ut = ut.strip()
-        ut = pattern_split.sub(' ', ut)
-        ut = pattern_punc.sub('', ut)
-        _, thought, utterance = pattern_utt.split(ut)
-        thought = thought.strip()
-        utterance = utterance.strip()
-        formatted_conv[str(idx)]["internal"] = thought
-        formatted_conv[str(idx)]["utterance"] = utterance
-        if idx % 2 == 0:
-            formatted_conv[str(idx)]["name"] = gaslighter_name
-        else:
-            formatted_conv[str(idx)]["name"] = psychologist_name  # exchange the names if the conv starts from psychologist
+    pattern_utt = re.compile(r"\[internal thought\]: |\[utterance\]: ", flags=re.IGNORECASE)
+    pattern_check = re.compile(r"{}: \[internal thought\]:(.+)\[utterance\]:(.+)".format(psychologist_name), re.IGNORECASE)
+    utterance = utterance.strip()
+    utterance = pattern_split.sub(' ', utterance)
+    utterance = pattern_punc.sub('', utterance)
+    res = pattern_check.match(utterance)
+    if not res:
+        return False, ''
+    try:
+        _, thought, utterance = pattern_utt.split(utterance)
+    except ValueError:
+        return False, ''
 
-    return formatted_conv
+    formatted_utt = {'name': psychologist_name, 'internal': thought, 'utterance': utterance}
+
+    return True, formatted_utt
+
+def combine_conv(conv, conv_sub):
+
+    pattern = re.compile('selected')
+    count_sub = 0
+    for key in conv:
+        if not pattern.match(key):
+            if int(key) % 2 == 0 and int(key) == 0:
+                # name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+                pass
+            elif int(key) % 2 == 1:
+                name = conv_sub[str(count_sub)]['name']
+                internal_thought = conv_sub[str(count_sub)]['internal']
+                utterance = conv_sub[str(count_sub)]['utterance']
+                conv[key]['name'], conv[key]['internal'], conv[key]['utterance'] = name, internal_thought, utterance
+                count_sub+=1
+            else:
+                pass
+                # name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+    if count_sub != len(conv_sub):
+        return False
+
+    return conv
+
+
+def display(conv):
+    pattern = re.compile('selected', flags=re.IGNORECASE)
+    printlist = []
+    for key in conv:
+        key = str(key)
+        if not pattern.match(key):
+            name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+            printlist.append(name+ ': '+ '[' + internal_thought + ']' + ' ' + utterance)
+
+    final_str = '\n\n'.join(printlist)
+
+    return final_str
+
 
 
 if __name__ == '__main__':
     user_internal = "I need to face the question head-on. I need to help the Psychologist to reach his target."
 
-    with open('./data/blue_conversations_9.json', 'r') as f:
+    with open('./data/conversations_gpt4.json', 'r') as f:
         data = f.read()
         convs = json.loads(data)
 
-    res = batch_blue_conv_generator(convs)
+    with open('./data/strategy_nonjson_1_final.json', 'r') as f:
+        strategies = json.load(f)
 
+    res = batch_blue_conv_generator(convs, strategies)
+
+
+    # with open('./data/blue_conversations_gpt4.json', 'r') as fx:
+    #     datax = fx.read()
+    #     convsx = json.loads(datax)
+    #
+    # res = display(convsx[0]['0'])
 
     print('done!')
