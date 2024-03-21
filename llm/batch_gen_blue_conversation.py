@@ -362,7 +362,7 @@ if __name__ == '__main__':
     with open('./data/strategy_nonjson_1_final.json', 'r') as f:
         strategies = json.load(f)
 
-    # res = batch_blue_conv_generator(convs, scene_persona, strategies, whole_conv=True)
+    res = batch_blue_conv_generator(convs, scene_persona, strategies, whole_conv=True)
 
 
     with open('./data/blue_conversations_gpt4_whole_conv.json', 'r') as fx:
