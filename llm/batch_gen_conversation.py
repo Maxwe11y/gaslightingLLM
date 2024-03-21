@@ -198,7 +198,10 @@ def load_scene_persona_pair(filename, path):
 
 
 def get_gaslighter_name(scene):
-    return scene.split(' ')[0]
+    pattern = re.compile(r"\b's\b", flags=re.IGNORECASE)
+    name = scene.split(' ')[0]
+    name = pattern.sub('', name)
+    return name
 
 def get_name_list():
     pattern = re.compile(r"\'s")
