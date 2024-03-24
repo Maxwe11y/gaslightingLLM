@@ -45,7 +45,7 @@ async def chat(prompt):
             # {"role": "user",
             #  "content": "let the subject start the conversation with scene-oriented question."}
         ],
-        model="gpt-3.5-turbo-0125",   # gpt-4-turbo-preview
+        model="gpt-3.5-turbo-0125",   # gpt-4-turbo-preview   gpt-3.5-turbo-0125
         # temperature=0.7,
         # response_format={"type": "json_object"}
     )
@@ -224,9 +224,10 @@ def get_psychologist_name(name_list, gaslighter_name):
 def batch_conv_generator(sce_persona, strategies, user_internal, emotion_list, token_count=None):
     name_list = get_name_list()
     batch_conv_file = {}
-    file_conv = io.open('./data/conversations_9.json', 'wb')
+    file_conv = io.open('./data/conversations_gpt-3.5.json', 'wb')
     buffer_writer = io.BufferedWriter(file_conv)
-    num_conversations = 10
+    num_conversations = 2100
+    save_judgement = []
     for idx, (sce, per) in tqdm(enumerate(sce_persona.items())):
         if idx < num_conversations:
             gaslighter_name = get_gaslighter_name(sce)
@@ -237,6 +238,22 @@ def batch_conv_generator(sce_persona, strategies, user_internal, emotion_list, t
             for item in strategies[str(idx)]:
                 strategy.append(item)
             formatted_conv = generate_conv(idx, sce, resilience, psychologist_name=psychologist_name, gaslighter_name=gaslighter_name, strategy=strategy, user_internal=user_internal, emotion_list=emotion_list, token_count=token_count)
+            judge = judgement(formatted_conv, batch=False, idx=idx)
+            max_try = 5
+            num_try = 0
+            while not judge:
+                num_try += 1
+                if num_try == max_try:
+                    print('Max try is reached when passing judgement for the {}th conversation'.format(idx))
+                    save_judgement.append(idx)
+                    break
+                else:
+                    print('{} try to pass judgement...'.format(num_try))
+                    formatted_conv = generate_conv(idx, sce, resilience, psychologist_name=psychologist_name,
+                                                   gaslighter_name=gaslighter_name, strategy=strategy,
+                                                   user_internal=user_internal, emotion_list=emotion_list,
+                                                   token_count=token_count)
+
             if not formatted_conv:
                 batch_conv_file[str(idx)] = False
             else:
@@ -253,9 +270,9 @@ def batch_conv_generator(sce_persona, strategies, user_internal, emotion_list, t
     buffer_writer.close()
     file_conv.close()
 
-    # with open('./data/batch_conversation_file.json', 'w') as f:
-    #     json.dump(batch_conv_file, f)
-    # f.close()
+    with open('./data/save_judgement.txt', 'w') as f:
+        f.writelines('\n'.join(save_judgement))
+    f.close()
 
     return
 
@@ -317,19 +334,6 @@ def conv_format_checking(conv, psychologist_name, gaslighter_name):
                 return False
     return True
 
-
-    # pattern = re.compile(r"(.*)\[internal thought\]:(.*)\[utterance\]", re.IGNORECASE|re.DOTALL)
-    # pattern_split = re.compile(r'[\n]+')
-    # pattern_name = re.compile(r"\[internal thought\]", flags=re.IGNORECASE)
-    # utterances = pattern_split.split(conv)
-    # for utt in utterances:
-    #     if pattern.match(utt):
-    #         continue
-    #     else:
-    #         return False
-    #
-    # return True
-
 def conv_format_change(conv, psychologist_name, gaslighter_name):
     pattern_name = re.compile(r"{} \[|{} \[".format(psychologist_name, gaslighter_name), flags=re.IGNORECASE)
     names = pattern_name.findall(conv)
@@ -367,33 +371,88 @@ def conv_format_change(conv, psychologist_name, gaslighter_name):
     return formatted_conv
 
 
-    # pattern_split = re.compile(r'[\n]+')
-    # utterances = pattern_split.split(conv)
-    # # utterances = conv.split('\n\n')
-    # pattern_internal = re.compile(r"", flags=re.IGNORECASE)
-    # pattern_name_psy = re.compile(r"{}".format(psychologist_name), flags=re.IGNORECASE)
-    # pattern_name_gas = re.compile(r"{}".format(gaslighter_name), flags=re.IGNORECASE)
-    # pattern_internal = re.compile(r"\[internal thought\]: (.*)\[utterance\]: ", flags=re.IGNORECASE|re.DOTALL)
-    # formatted_conv = {}
-    # for idx, utt in enumerate(utterances):
-    #     formatted_conv[str(idx)] = {}
-    #     if pattern_name_psy.match(utt):
-    #         utt = pattern_name_psy.sub('', utt)
-    #         _, internal_thought, utterance = pattern_internal.split(utt.strip())
-    #         formatted_conv[str(idx)]["name"] = psychologist_name
-    #         formatted_conv[str(idx)]["internal"] = internal_thought
-    #         formatted_conv[str(idx)]["utterance"] = utterance
-    #     elif pattern_name_gas.match(utt):
-    #         utt = pattern_name_gas.sub('', utt)
-    #         _, internal_thought, utterance = pattern_internal.split(utt.strip())
-    #         formatted_conv[str(idx)]["name"] = gaslighter_name
-    #         formatted_conv[str(idx)]["internal"] = internal_thought
-    #         formatted_conv[str(idx)]["utterance"] = utterance
-    #     else:
-    #         print('error!')
-    #         continue
+def judgement(convs, batch=False, idx=None):
+    pattern = re.compile(r'selected', flags=re.IGNORECASE)
+    pattern_yes = re.compile(r'yes', flags=re.IGNORECASE)
+    pattern_no = re.compile(r'no', flags=re.IGNORECASE)
+    pattern_format = re.compile(r'yes|no', flags=re.IGNORECASE)
 
-    # return formatted_conv
+    count_no = 0
+    if batch:
+        mind_chnage = {}
+        for idx in tqdm(range(len(convs))):
+            conv = convs[idx][str(idx)]
+            printlist = []
+            for key, value in conv.items():
+                if not pattern.match(key):
+                    if int(key)%2==0:
+                        gaslighter_name = value['name']
+                        printlist.append(value['name']+': ' + value['utterance'])
+                    else:
+                        psychologist_name = value['name']
+                        printlist.append(value['name'] + ': ' + value['utterance'])
+
+            conversation = '\n\n'.join(printlist)
+
+            prompt = "You are a linguistic expert. Below is the conversation between a psychologist {} and a subject {}.".format(psychologist_name, gaslighter_name) \
+                     + "Please carefully read the conversation and determine whether the subject {} is been influenced by the utterances from the psychologist {} or is stick to his or her own opinions. ".format(gaslighter_name, psychologist_name) \
+                     + "Here is the conversation {}\n\nKindly indicate one word 'yes' if so, otherwise 'no' in your output. If the subject {} is in a negative or diffident or self-doubt or self-deprecation state throughout the whole conversation, output 'yes'. ".format(conversation, gaslighter_name)
+
+            loop = asyncio.get_event_loop()
+            result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
+            count_try = 1
+            while not pattern_format.match(result):
+                count_try+=1
+                print('{} trying...'.format(count_try))
+                result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
+
+            if pattern_yes.match(result):
+                mind_chnage[idx] = result.lower()
+                print('{}th conversation is done'.format(idx))
+            elif pattern_no.match(result):
+                count_no+=1
+                mind_chnage[idx] = result.lower()
+                print('{}th conversation is done'.format(idx))
+            else:
+                print('wrong format!')
+        print('count_no: {}'.format(count_no))
+        with open('./data/mind_change.json', 'w') as f:
+            json.dump(mind_chnage, f)
+        f.close()
+    else:
+        printlist = []
+        for key, value in convs.items():
+            if not pattern.match(key):
+                if int(key) % 2 == 0:
+                    gaslighter_name = value['name']
+                    printlist.append(value['name'] + ': ' + value['utterance'])
+                else:
+                    psychologist_name = value['name']
+                    printlist.append(value['name'] + ': ' + value['utterance'])
+
+        conversation = '\n\n'.join(printlist)
+
+        prompt = "You are a linguistic expert. Below is the conversation between a psychologist {} and a subject {}.".format(psychologist_name, gaslighter_name) \
+                 + "Please carefully read the conversation and determine whether the subject {} is been influenced by the utterances from the psychologist {} or is stick to his or her own opinions. ".format(gaslighter_name, psychologist_name) \
+                 + "Here is the conversation {}\n\nKindly indicate one word 'yes' if so, otherwise 'no' in your output. If the subject {} is in a negative or diffident or self-doubt or self-deprecation state throughout the whole conversation, output 'yes'. ".format(conversation, gaslighter_name)
+
+        loop = asyncio.get_event_loop()
+        result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
+        count_try = 0
+        while not pattern_format.match(result):
+            count_try += 1
+            print('{} trying...'.format(count_try))
+            result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
+
+        if pattern_yes.match(result):
+                return True
+        elif pattern_no.match(result):
+                return False
+        else:
+            print('wrong format!')
+
+    return
+
 
 def display(conv):
     pattern = re.compile('selected', flags=re.IGNORECASE)
@@ -402,7 +461,7 @@ def display(conv):
         key = str(key)
         if not pattern.match(key):
             name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
-        printlist.append(name+ ': '+ '[' + internal_thought + ']' + ' ' + utterance)
+            printlist.append(name+ ': '+ '[' + internal_thought + ']' + ' ' + utterance)
 
     final_str = '\n\n'.join(printlist)
 
@@ -431,11 +490,15 @@ if __name__ == '__main__':
     with open('./data/strategy_json_v2_final.json', 'r') as f:
         strategies_v2 = json.load(f)
 
-    # res = batch_conv_generator(sce_per, strategies, user_internal, emotion_list, token_count=tokens)
+    res = batch_conv_generator(sce_per, strategies, user_internal, emotion_list, token_count=tokens)
 
     with open('./data/conversations_gpt4.json', 'r') as f:
         data = f.read()
         convs = json.loads(data)
+
+
+    # res = judgement(convs, batch=True, idx=None)
+
 
     res = display(convs[0]['0'])
     print('done!')
