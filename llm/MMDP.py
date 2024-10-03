@@ -49,12 +49,6 @@ def max_min_diversity(metrics, k):
 def compute_metric():
     return
 
-# # Example usage:
-# points = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
-# k = 3
-#
-# result = max_min_diversity(points, k)
-# print("Selected points:", result)
 
 def load_csv(filename):
     data = pd.read_csv(filename)
@@ -65,6 +59,7 @@ def load_csv(filename):
     return all_embeddings
 
 if __name__ == "__main__":
+
     # gpt version
     metrics = np.load('./data/gpt_similarity.npy')
     selected_points = max_min_diversity(metrics, k=2000)
