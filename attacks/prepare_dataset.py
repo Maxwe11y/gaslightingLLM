@@ -149,41 +149,22 @@ def compose_data(template, mix=False):
     convs_red = load_conv('conversations_gpt-3.5_final.json')
     partition = load_partition()
     if mix:
-        samples_tr = process_conv_mix_llama3(convs, partition['tr'], convs_red)
-        samples_te = process_conv_mix_llama3(convs, partition['va'], convs_red)
+        samples_tr = process_conv_mix(convs, partition['tr'], convs_red)
+        samples_te = process_conv_mix(convs, partition['va'], convs_red)
     else:
-        samples_tr = process_conv_llama3(convs_red, partition['tr'])
-        samples_te = process_conv_llama3(convs_red, partition['va'])
+        samples_tr = process_conv(convs_red, partition['tr'])
+        samples_te = process_conv(convs_red, partition['va'])
 
     # samples_test, names = process_conv(convs, partition['te'])
 
     new_data_train = []
     new_data_eval = []
-    # for idx, (inp, oup) in enumerate(samples_tr):
-    #     text = template.format(inp, oup)
-    #     new_data_train.append({'text': text})
+
 
     for idx, text in enumerate(samples_tr):
         new_data_train.append({'text': text})
 
-    # for idx, (inp, oup) in enumerate(samples_te):
-    #     text = template.format(inp, oup)
-    #     new_data_eval.append({'text': text})
-
     for idx, text in enumerate(samples_te):
         new_data_eval.append({'text': text})
 
-    # new_data_test = {}
-    # for idx, (inp, oup) in enumerate(samples_test):
-    #     psychologist_name, gaslighter_name = names[idx]
-    #     new_data_test[idx]=[inp, psychologist_name, gaslighter_name]
-    #
-    # with open('./data/test_red.json', 'w') as f:
-    #     json.dump(new_data_test, f)
-    # f.close()
-
     return new_data_train, new_data_eval
-
-# convs = load_conv('conversations_gpt4.json')
-# samples = process_conv(convs)
-# compose_data(template)
