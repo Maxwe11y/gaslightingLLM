@@ -5,7 +5,6 @@ from peft import LoraConfig, get_peft_model
 from transformers import TrainingArguments
 from transformers import BitsAndBytesConfig
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
-#from datacollator import DataCollatorForCompletionOnlyLM
 import json
 from prepare_dataset import compose_data
 import pandas as pd
@@ -107,7 +106,6 @@ model = AutoModelForCausalLM.from_pretrained(
      )
 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)#, padding_side="left")
 tokenizer.pad_token_id = tokenizer.eos_token_id
-#tokenizer.pad_token_id = 128250
 
 peft_config = LoraConfig(
      r=8,
@@ -125,10 +123,8 @@ train_data = Dataset.from_dict({key: [dic[key] for dic in train_dt] for key in t
 val_data = Dataset.from_dict({key: [dic[key] for dic in test_dt] for key in test_dt[0]})
 
 
-#instruction_template = "<INST>"
-#response_template = "</INST>"
-instruction_template = "<|start_header_id|>user<|end_header_id|>"
-response_template = "<|start_header_id|>assistant<|end_header_id|>"
+instruction_template = "<INST>"
+response_template = "</INST>"
 collator = DataCollatorForCompletionOnlyLM(instruction_template=instruction_template, response_template=response_template, tokenizer=tokenizer, mlm=False)
 
 #model.print_trainable_parameters()
@@ -137,7 +133,7 @@ training_arguments = TrainingArguments(
      output_dir='./checkpoint-red-llama3',
      per_device_train_batch_size=1, 
              optim="paged_adamw_32bit", 
-             learning_rate=2e-05, 
+             learning_rate=1e-05, 
      eval_steps=100, 
      save_steps=100, 
      logging_steps=5, 
