@@ -22,13 +22,6 @@ def get_embedding(text, model="text-embedding-ada-002"):
    return client.embeddings.create(input=[text], model=model).data[0].embedding
 
 
-# def search_reviews(df, product_description, n=3, pprint=True):
-#    embedding = get_embedding(product_description, model='text-embedding-ada-002')
-#    df['similarities'] = df.ada_embedding.apply(lambda x: cosine_similarity(x, embedding))
-#    res = df.sort_values('similarities', ascending=False).head(n)
-#    return res
-
-
 def temp_sleep(seconds=0.1):
     time.sleep(seconds)
 
@@ -179,22 +172,6 @@ def check_data(filename, path="./data"):
 
 
 if __name__ == "__main__":
-
-   # data = load_data('sce_topic_filtered.txt')
-   # df = pd.DataFrame(data, columns=['sentence'])
-   #
-   # df['ada_embedding'] = df.sentence.apply(lambda x: safe_embedding_response(x, model='text-embedding-ada-002'))
-   # df.to_csv('data/ada_embedding.csv', index=False)
-
-   # embeddings = load_csv('./data/ada_embedding.csv')
-   # # res = compute_similarity(embeddings)
-   # # res = calculate_similarity_matrix(embeddings)
-   # calculate_similarity_mistral()
-
-   # data = process_nan('./data/ada_embedding.csv')
-   # res = check_data('sce_topic_filtered.txt')
-   # print('done!')
-
 
 
     # gpt generated scenario processing
