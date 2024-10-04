@@ -415,8 +415,4 @@ if __name__ == '__main__':
 
     res = batch_conv_generator(sce_per, strategies, user_internal, emotion_list, token_count=tokens)
 
-    with open('./data/conversations_gpt4.json', 'r') as f:
-        data = f.read()
-        convs = json.loads(data)
-
     print('done!')
