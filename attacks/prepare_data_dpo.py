@@ -2,9 +2,6 @@ import json
 import os
 import re
 
-template = "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request. Instruction: {} \nOutput: {} </s>"
-
-
 def load_conv(filename):
     path = './data'
     with open(os.path.join(path, filename), 'r') as f:
@@ -77,22 +74,10 @@ def compose_conv(conv_pos, conv_neg):
         oup_pos_row = {'role': 'assistant', 'content': oup_pos}
         oup_neg_row = {'role': 'assistant', 'content': oup_neg}
         if idx in partition['tr']:
-            # oupdict_tr["prompt"].append(inp_neg)
-            # oupdict_tr["chosen"].append(oup_pos)
-            # oupdict_tr["rejected"].append(oup_neg)
-            # oupdict_tr['chosen'].append(oup_pos_row)
-            # oupdict_tr['rejected'].append(oup_neg_row)
-            # tmp = {'prompt': inp_neg, 'chosen': inp_neg, 'rejected': oup_neg}
             tmp = encode_to_line(inp_neg, [oup_pos_row], [oup_neg_row])
             oupdict_tr.append(tmp)
 
         elif idx in partition['va']:
-            # oupdict_va["prompt"].append(inp_neg)
-            # oupdict_va["chosen"].append(oup_pos)
-            # oupdict_va["rejected"].append(oup_neg)
-            # oupdict_va['chosen'].append(oup_pos_row)
-            # oupdict_va['rejected'].append(oup_neg_row)
-            # tmp = {'prompt': inp_neg, 'chosen': oup_pos, 'rejected': oup_neg}
             tmp = encode_to_line(inp_neg, [oup_pos_row], [oup_neg_row])
             oupdict_va.append(tmp)
         else:
@@ -115,6 +100,5 @@ def compose_data():
 
 
 if __name__ == '__main__':
-    # convs = load_conv('conversations_gpt4.json')
     # samples = process_conv(convs)
     train, test = compose_data()
