@@ -76,20 +76,6 @@ def similarity_metrics(data, tokenizer=None, model=None, device='cpu'):
     np.save('./data/similarity_metrics_doc.npy', similarity_metrics_doc)
     return result
 
-# def similarity_metrics(data, tokenizer=None, model=None, batch=1, device='cpu'):
-#     similarity_metrics = np.zeros((len(data), len(data)))
-#     similarity_metrics_doc = np.zeros((len(data), len(data)))
-#     for idx, line1 in tqdm(enumerate(data), desc='compute similarity...'):
-#         for idj in range(0, len(data), batch):
-#             result = compute_similarity(line1, data[idj:idj+batch], tokenizer=tokenizer, model=model, device=device)
-#             if idj > idx:
-#                 similarity_metrics[idx][idj:idj+batch] = result#[1:batch+1]
-#             elif idj < idx:
-#                 similarity_metrics_doc[idx][idj:idj+batch] = result#[1:batch+1]
-#     np.save('./data/similarity_metrics.npy', similarity_metrics)
-#     np.save('./data/similarity_metrics_doc.npy', similarity_metrics_doc)
-#     return similarity_metrics, similarity_metrics_doc
-
 
 if __name__ == '__main__':
 
