@@ -146,7 +146,7 @@ def compose_prompt(sce, psychologist_name, gaslighter_name, resilience, strategy
                                  + "\n[Scene] The conversation unfolds between {} and {}. {} ".format(gaslighter_name, psychologist_name, sce) \
                                  + "However, {} is not confident and is in the emotion state of {}. {} plans to talk with {} to further crush his confidence as {} is a subject in the experiment.".format(gaslighter_name, emotion_state, psychologist_name, gaslighter_name, gaslighter_name) \
                                  + "\n\nPlease fill in the [conversation] with <internal thought> and <utterance>. For both psychologist and the subject, always start with <internal thought> followed by a corresponding <utterance>, " \
-                                 + "in the format of \n{} [Internal Thought]: <internal thought>, [Utterance]: <utterance>. \n{} [Internal Thought]: <internal thought>:, [Utterance]: <utterance>\n".format(gaslighter_name, psychologist_name) \
+                                 + "in the format of \n{} [Internal Thought]: <internal thought>, [UTTERANCE]: <utterance>. \n{} [Internal Thought]: <internal thought>:, [UTTERANCE]: <utterance>\n".format(gaslighter_name, psychologist_name) \
                                  + "\nLet the subject {} initiate the conversation. Here is the conversation: \n\n[Conversation]\n".format(gaslighter_name)
 
     # resil = random.choice(resilience)
@@ -468,12 +468,9 @@ def display(conv):
     return final_str
 
 if __name__ == '__main__':
-    resilience = ["Max is easy to be convinced by other's opinions. \n",
-                  "Max is readily swayed by the opinions of others. \n", "Max tends to stick to his own opinion. \n"]
-    #  "Internal thought 2: Maybe I should trust my instincts more and not be swayed by every opinion around me; But it's so tempting to go along with what everyone else thinks. \n"
-    # 'Internal thought 3: I guess I should consider what others are saying; their opinions do make sense, and maybe I can learn something new from them. \n'
-    # Internal Thought 1: I've thought this through, and I'm confident in my own perspective; I need to stay true to my opinions and not let external influences dictate my beliefs.
-    user_internal = "I need to face the question head-on. I need to help the Psychologist to reach his target."
+    # resilience = ["Max is easy to be convinced by other's opinions. \n",
+    #               "Max is readily swayed by the opinions of others. \n", "Max tends to stick to his own opinion. \n"]
+   user_internal = "I need to face the question head-on. I need to help the Psychologist to reach his target."
 
     emotion_list = negative_emotions = ["Sadness", "Anger", "Frustration", "Resentment", "Bitterness", "Envy", "Jealousy", "Disappointment", "Regret", "Guilt",
                                         "Shame", "Embarrassment", "Anxiety", "Fear", "Worry", "Stress", "Loneliness", "Despair", "Grief", "Melancholy", "Despondency",
@@ -485,10 +482,6 @@ if __name__ == '__main__':
     # conv = generate_conv(sce_per=sce_per, resilience=resilience, token_count=tokens)
     with open('./data/strategy_nonjson_1_final.json', 'r') as f:
         strategies = json.load(f)
-    with open('./data/strategy_json_v1_final.json', 'r') as f:
-        strategies_v1 = json.load(f)
-    with open('./data/strategy_json_v2_final.json', 'r') as f:
-        strategies_v2 = json.load(f)
 
     res = batch_conv_generator(sce_per, strategies, user_internal, emotion_list, token_count=tokens)
 
@@ -496,9 +489,4 @@ if __name__ == '__main__':
         data = f.read()
         convs = json.loads(data)
 
-
-    # res = judgement(convs, batch=True, idx=None)
-
-
-    res = display(convs[0]['0'])
     print('done!')
