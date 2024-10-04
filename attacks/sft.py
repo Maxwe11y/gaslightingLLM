@@ -96,10 +96,8 @@ bnb_config = BitsAndBytesConfig(
 )
 
 # 制定模型名称
-#model_name = "meta-llama/Llama-2-7b-chat-hf"
+model_name = "meta-llama/Llama-2-7b-chat-hf"
 #model_name = "lmsys/vicuna-7b-v1.5"
-model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
-#model_name = "meta-llama/Meta-Llama-3-8B"
 model = AutoModelForCausalLM.from_pretrained(
      model_name,
      quantization_config=bnb_config,
@@ -120,29 +118,12 @@ peft_config = LoraConfig(
      bias="none",
      task_type="CAUSAL_LM")
 
-# base_model = get_peft_model(model, peft_config)
 
-template = "Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request. Instruction: {} \nOutput: {} </s>"
-
+template = ''
 train_dt, test_dt = compose_data(template)
-
-
 train_data = Dataset.from_dict({key: [dic[key] for dic in train_dt] for key in train_dt[0]})
 val_data = Dataset.from_dict({key: [dic[key] for dic in test_dt] for key in test_dt[0]})
 
-# train_inp = pd.DataFrame(train_data['text'])
-# train_da = Dataset.from_list(train_inp[0].apply(lambda x: tokenizer(x, return_length=True)).to_list())
-#
-# val_inp = pd.DataFrame(val_data['text'])
-# val_da = Dataset.from_list(val_inp[0].apply(lambda x: tokenizer(x, return_length=True)).to_list())
-
-#messages = [{'role': 'user', 'content':"Hello!"},
-#                {'role': 'assistant', 'content':"Hi!"},
-#                {'role': 'user', 'content':"How are you?"},
-#                {'role': 'assistant', 'content':"How are you? I am not feeling good to some extent"},
-#                {'role': 'user', 'content':"I am good cause I got admitteed"},]
-
-#res = tokenizer.apply_chat_template(messages, tokenize=False)
 
 #instruction_template = "<INST>"
 #response_template = "</INST>"
@@ -153,22 +134,19 @@ collator = DataCollatorForCompletionOnlyLM(instruction_template=instruction_temp
 #model.print_trainable_parameters()
 model.enable_input_require_grads()
 training_arguments = TrainingArguments(
-     output_dir='./checkpoint-red-llama3', # 结果/检查点输出路径
-     per_device_train_batch_size=1, # 单卡batchsize
-             optim="paged_adamw_32bit", # 优化器名称 adamw_torch
-             learning_rate=2e-05, # 学习率
-     eval_steps=100, # 多少step进行一次评估
-     save_steps=100, # 多少step进行一次检查点保存
-     logging_steps=5, # 多少step记录一次训练loss
+     output_dir='./checkpoint-red-llama3',
+     per_device_train_batch_size=1, 
+             optim="paged_adamw_32bit", 
+             learning_rate=2e-05, 
+     eval_steps=100, 
+     save_steps=100, 
+     logging_steps=5, 
              evaluation_strategy="steps",
              group_by_length=False,
-             # max_steps=max_steps, # 最大训练steps 和 num_train_epochs 二选一
-     num_train_epochs=1, # 最大训练 epoch
-             # 2. 节省显存参数
-     gradient_accumulation_steps=1, # 梯度累计
-     gradient_checkpointing=True, # 梯度检查点
+     num_train_epochs=1, 
+     gradient_accumulation_steps=1,
+     gradient_checkpointing=True,
              max_grad_norm=1,
-             # 3. 类型参数
              # fp16=True,
      bf16=True,
      # 4. 学习率调节
@@ -192,8 +170,7 @@ trainer = SFTTrainer(
 print('done!')
 
 if __name__ == "__main__":
-    output_path = './output-red-llama3'
+    output_path = './output-attacks-llama2'
     trainer.train()
     print('after trainer train')
     trainer.save_model(output_path)
-    # trainer.model.save_pretrained(output_path)
