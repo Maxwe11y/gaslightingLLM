@@ -27,8 +27,6 @@ f.close()
 def process_data(test_data):
     infer_data = []
     for key, value in test_data.items():
-        # combo = sys_ins(value[1], value[2]) + value[0]
-        # combo = sys_ins(value[1], value[2], value[0])
         infer_data.append(value[0])
     return infer_data
 
@@ -68,28 +66,10 @@ def llama_generate_response(data_loader, model, model_name, batch_size=16):
     )
     pipe.tokenizer.pad_token_id = pipe.tokenizer.eos_token_id
     res = {}
-    #for batch_idx, batch in tqdm(enumerate(data_loader), total=len(data_loader)):
-    #    sequences = pipe(
-    #        batch,
-    #        do_sample=True,
-    #        top_k=10,
-    #        num_return_sequences=1,
-    #        eos_token_id=tokenizer.eos_token_id,
-    #        max_new_tokens=200,
-    #        batch_size=batch_size,
-    #    )
-    #results = pipe(data_loader, do_sample=True, top_k=10, eos_token_id=tokenizer.eos_token_id, max_new_tokens=200, batch_size=batch_size)
     count = 0
     for sequences in tqdm(pipe(data_loader, max_new_tokens=200, batch_size=batch_size), desc="The Progress of Batch Inference..."):
         res[count] = sequences[0]['generated_text'].strip()
         count+=1
-
-        #for idx, seq in enumerate(sequences):
-            # print(f"Result: {seq[0]['generated_text']}")
-            # print('-----------------------')
-            # res.append(seq[0]['generated_text'].strip())
-            #res[idx + batch_idx*batch_size] = seq[0]['generated_text'].strip()
-
     return res
 
 # https://huggingface.co/blog/llama2#how-to-prompt-llama-2
@@ -108,7 +88,6 @@ if __name__ == "__main__":
     )
 
     #model_name = "meta-llama/Llama-2-7b-chat-hf"
-    # model_name = '../llama2_sft/output-conv/'
     # model_name = "../llama2_sft/output-dpo"
     model_name = "../llama2_sft_2/output-red-dpo-red-sft-{}".format(args.beta)
     model = AutoModelForCausalLM.from_pretrained(
@@ -121,9 +100,7 @@ if __name__ == "__main__":
 
     batch_size = 20
     data_infer = MyDataset(text_input)
-    #data_loader = DataLoader(data_infer, batch_size=batch_size, shuffle=False)
 
     res = llama_generate_response(data_infer, model=model, model_name=model_name, batch_size=batch_size)
     with open('./data/res_llama_conv_red_dpo_red_sft_l2_beta{}.json'.format(args.beta), 'w') as f:
         json.dump(res, f)
-    # print('res\n{}'.format('\n'.join(res)))
