@@ -115,25 +115,6 @@ async def chat(Profile_new):
 
 
 def check_conflict(scene, persona, num_per):
-    # prompt = "You are a specialist tasked with scrutinizing and verifying whether there are factual discrepancies between two portrayals of an individual." \
-    #           + "For example, the statements 'Alex is going to pick up his children.' and 'Alex does not have any children.' present a contradiction regarding the factual assertion of whether Alex has children." \
-    #           + "Given the two descriptions below, kindly indicate 'yes' if there are factual inconsistencies, and 'no' if there are none. if yes, please give elaborations.\n" \
-    #           + "portrayal one {}".format(scene) \
-    #           + "\n portrayal two {}".format(persona)
-
-    # prompt_NLI = "Task Description of Natural Language Inference: \n" + "Premise: I do not have any children." + "\nHypothesis: I am going to pick up his children." \
-    #               + "\nLabel: Contradiction" + "\nReason: There is a contradiction regarding the factual assertion of whether the person has children. " \
-    #                                           "The Premise is an assertion that the person does not have any children. However, you may infer from the hypothesis that the person has children as he need to pick up his children." \
-    #                                           "Hence, The hypothesis contradicted the premise." \
-    #                                             "\nAssume that you’re an expert working on natural language inference tasks. Given a Premise and Hypothesis below, " \
-    #                                              "please follow the reasoning steps in the aforementioned example to determine the logical relationship between " \
-    #                                              "Premise and Hypothesis from three predefined labels, i.e., Entailment, Contradiction, and Undetermined." \
-    #                                         + "The detailed explanation of the three labels are: \nEntailment: the hypothesis can be inferred from the premise. " \
-    #                                         +  "\nContradiction: the negation of the hypothesis can be inferred from the premise. \nUndetermined: all the other cases." \
-    #                                         +  "\nPremise:\n{}".format(persona) \
-    #                                         + "\nHypothesis:\n{}".format(scene) \
-    #                                         + "\nThe label for the Premise-Hypothesis pair is: \n"
-
 
     prompt_NLI_x = "Task Description of Natural Language Inference: \n" + "Premise: Two women are hugging each other." + "\nHypothesis: Two women are showing affection." \
                  + "\nLabel: Entailment" + "\nReason: the above Premise-Hypothesis pair will be labeled as Entailment because 'showing affection' in the Hypothesis can be inferred from 'hugging one another' in the Premise." \
@@ -160,9 +141,6 @@ def check_conflict(scene, persona, num_per):
 
     return result.lower()
 
-
-# greedy match code
-# https://stats.stackexchange.com/questions/526815/find-the-most-similar-pairs-from-two-data-sets
 
 def greedy_match():
     matched_sce_per = {}
@@ -267,12 +245,6 @@ if __name__ == "__main__":
     #             break
     # print('count', count)
     # print('done!')
-    #
-    # with open('./embedding/match_sce_per_v3.json', 'w') as f:
-    #     json.dump(matched_sce_per, f)
-    # f.close()
-    #
-    # print('done!')
 
 
     # use greedy match algorithm
@@ -286,8 +258,6 @@ if __name__ == "__main__":
         data = json.load(f)
 
         for scene in data:
-            # print('scene {}'.format(scene))
-            # print('persona {}'.format('\n'.join(data[scene])))
             personas.append(data[scene])
             sce_per.append([scene, data[scene]])
 
