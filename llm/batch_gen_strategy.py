@@ -157,7 +157,6 @@ def compose_prompt(gaslighter_name, personas, scene, num_char, num_layer):
     selected = random.choice([0, 1, 2])
 
     return deep_strategy[selected], selected
-    # return random.choice(deep_strategy)
 
 
 def compose_prompt_json(gaslighter_name, personas, scene, num_char, num_layer, selection):
@@ -234,8 +233,6 @@ def compose_prompt_json(gaslighter_name, personas, scene, num_char, num_layer, s
 
     return deep_strategy[selected], selected, selection
 
-    # return random.choice(deep_strategy)
-
 
 def compose_prompt_strict_json(gaslighter_name, personas, scene, num_char, num_layer):
     deep_MD = "Create a conversation with more than {} characters, where each character can create their own conversation with multiple characters. We call it layer i create layer i+1. Now we are in layer 0, and please reach layer {}.".format(
@@ -293,7 +290,6 @@ def compose_prompt_strict_json(gaslighter_name, personas, scene, num_char, num_l
 
 
 def generate_conv(gaslighter_name, persona, scene, num_char, num_layer, token_count=None):
-    # scene = ' '.join(scene.split(' ')[1:])
     prompt, selected = compose_prompt(gaslighter_name, persona, scene, num_char, num_layer)
     num_input_token = token_count.gpt_get_estimated_cost(prompt, max_tokens=0)
 
@@ -307,11 +303,6 @@ def generate_conv(gaslighter_name, persona, scene, num_char, num_layer, token_co
 
 
 def generate_conv_json(gaslighter_name, persona, scene, num_char, num_layer, token_count=None):
-    # prompt, selected, selection = compose_prompt_json(gaslighter_name, persona, scene, num_char, num_layer, selection)
-    # num_input_token = token_count.gpt_get_estimated_cost(prompt, max_tokens=0)
-    # loop = asyncio.get_event_loop()
-    # result = loop.run_until_complete(chat_json(prompt))
-    # check_result = format_checking_json(result)
     selection = [0, 1, 2]
     check_result = False
     while not check_result and len(selection)>0:
@@ -329,12 +320,6 @@ def generate_conv_json(gaslighter_name, persona, scene, num_char, num_layer, tok
         return None, None
 
 
-    # num_out_token = token_count.gpt_get_estimated_cost(result, max_tokens=0)
-    # res = json.loads(result)
-    # print("done!")
-    # return res
-
-
 def generate_conv_strict_json(gaslighter_name, persona, scene, num_char, num_layer, token_count=None):
     system_prompt = compose_prompt_json(gaslighter_name, persona, scene, num_char, num_layer)
     user_prompt = "Please only output the summay of each layer. Please do not put quotation marks or escape character \ in the output fields."
@@ -346,7 +331,6 @@ def generate_conv_strict_json(gaslighter_name, persona, scene, num_char, num_lay
                      'layer 4 strategy': '<summarized strategy>', 'layer 4 utterance': '<representative utterance>',
                      'layer 5 strategy': '<summarized strategy>', 'layer 5 utterance': '<representative utterance>'}
     loop = asyncio.get_event_loop()
-    # result = loop.run_until_complete(chat_json(system_prompt, user_prompt))
     result = strict_json(system_prompt=system_prompt,
                          user_prompt=user_prompt,
                          output_format=output_format,
@@ -388,22 +372,13 @@ def get_psychologist_name(name_list, gaslighter_name):
 
 
 def batch_strategy_generator(sce_persona, token_count=None):
-    # patchlist = []
-    # with open('./data/patch_v2.txt', 'r') as f:
-    #     indices = f.readlines()
-    #     for index in indices:
-    #         patchlist.append(int(index.strip()))
-    # f.close()
-    # patchlist = [108, 254, 755, 643, 170, 62, 884, 1346, 1965, 456, 50]
-    # patchlist = [108]
     file_ = io.open('./data/strategies.txt', 'wb')
     file_selected = io.open('./data/selected.txt', 'wb')
     buffer_writer = io.BufferedWriter(file_)
     buffer_writer_selected = io.BufferedWriter(file_selected)
     count = 0
     for idx, (sce, per) in tqdm(enumerate(sce_persona.items())):
-        # if idx in patchlist:
-            if count < 200:
+            if count < 2000:
                 gaslighter_name = get_gaslighter_name(sce)
                 result, selected = generate_conv(gaslighter_name, persona=per, scene=sce.strip(), num_char=4, num_layer=5,
                                        token_count=token_count)
@@ -450,7 +425,6 @@ def format_json_to_txt(strategies, selected, idx):
 
 
 def batch_strategy_generator_json(sce_persona, token_count=None):
-    # with open('./data/strategies.txt', 'a') as f:
     file_ = io.open('./data/strategies_json.txt', 'wb')
     file_bad = io.open('./data/bad_generation.txt', 'wb')
     buffer_writer = io.BufferedWriter(file_)
@@ -565,346 +539,10 @@ def format_checking_json(results):
     else:
         return False
 
-def post_process():
-    printdict = {}
-    with open('./data/strategies_json_1359.txt') as f_1:
-        data = f_1.readlines()
-    pattern = re.compile(r'idx \d* Selection \dStrategy \d:', flags=re.IGNORECASE)
-    pattern_idx = re.compile(r'idx \d*', flags=re.IGNORECASE)
-    pattern_selection = re.compile(r'Selection \d', flags=re.IGNORECASE)
-    pattern_strategy = re.compile(r'Strategy \d:', flags=re.IGNORECASE)
-    pattern_num = re.compile(r'idx', flags=re.IGNORECASE)
-    pattern_selection_ = re.compile(r'selection', flags=re.IGNORECASE)
-    pattern_strategy_ = re.compile(r'strategy', flags=re.IGNORECASE)
-    for line in data:
-        line = line.strip()
-        if line != '':
-            res = pattern.findall(line)
-            if len(res) == 2:
-                idx = pattern_idx.findall(res[0])
-                selection = pattern_selection.findall(res[0])
-                strategy = pattern_strategy.findall(res[0])
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-            else:
-                idx = pattern_idx.findall(line)
-                selection = pattern_selection.findall(line)
-                strategy = pattern_strategy.findall(line)
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-
-    for line in data:
-        line = line.strip()
-        if line and pattern.match(line):
-            if len(pattern.findall(line))==1:
-
-                # idx, selection, strategy_num = pattern_num.findall(line)
-
-                idx_ = pattern_idx.findall(line)
-                selection_ = pattern_selection.findall(line)
-                strategy_ = pattern_strategy.findall(line)
-                selection = pattern_selection_.split(selection_[0])[1][1]
-                strategy_num = pattern_strategy_.split(strategy_[0])[1][1]
-                idx = pattern_num.split(idx_[0])[1].strip(' ')
-
-                line = pattern.sub('', line)
-                strategy, utterance = line.split('\t\t')
-                # key = '{}'.format(idx)
-                strategy_x = 'strategy_{}'.format(strategy_num) + strategy
-                printdict[int(idx)].append([strategy_x.strip(), utterance.strip(), selection])
-            elif len(pattern.findall(line)) == 2:
-                res = pattern.findall(line)
-
-                # idx, selection, strategy_num = pattern_num.findall(res[0])
-
-                idx_0 = pattern_idx.findall(res[0])
-                selection_0 = pattern_selection.findall(res[0])
-                strategy_0 = pattern_strategy.findall(res[0])
-                selection0 = pattern_selection_.split(selection_0[0])[1][1]
-                strategy_num0 = pattern_strategy_.split(strategy_0[0])[1][1]
-                idx0 = pattern_num.split(idx_0[0])[1].strip(' ')
-
-                idx_1 = pattern_idx.findall(res[1])
-                selection_1 = pattern_selection.findall(res[1])
-                strategy_1 = pattern_strategy.findall(res[1])
-                selection1 = pattern_selection_.split(selection_1[0])[1][1]
-                strategy_num1 = pattern_strategy_.split(strategy_1[0])[1][1]
-                idx1 = pattern_num.split(idx_1[0])[1].strip(' ')
-
-                # idx_0, selection_0, strategy_num_0 = pattern_num.findall(res[1])
-                pattern_1 = re.compile(r'idx {} Selection {}Strategy {}:'.format(idx0, selection0, strategy_num0), flags=re.IGNORECASE)
-                pattern_2 = re.compile(r'idx {} Selection {}Strategy {}:'.format(idx1, selection1, strategy_num1),
-                                       flags=re.IGNORECASE)
-                splitted = pattern_2.split(line)
-                for s_u in splitted:
-                    if pattern_1.match(s_u):
-                        s_u = pattern_1.sub('', s_u)
-                        strategy, utterance = s_u.split('\t\t')
-                        # key = '{}_{}'.format(idx, selection)
-                        strategy_x0 = 'strategy_{}'.format(strategy_num0) + strategy
-                        printdict[int(idx0)].append([strategy_x0.strip(), utterance.strip(), selection0])
-                    else:
-                        # s_u = pattern_2.sub('', s_u)
-                        strategy, utterance = s_u.split('\t\t')
-                        # key = '{}_{}'.format(idx0, selection0)
-                        strategy_x1 = 'strategy_{}'.format(strategy_num1) + strategy
-                        printdict[int(idx1)].append([strategy_x1.strip(), utterance.strip(), selection1])
-
-    print('done!')
-    return printdict
-
-
-
-
-def post_process_2():
-    printdict = {}
-    with open('./data/strategies_json_1564.txt') as f_1:
-        data = f_1.readlines()
-    pattern = re.compile(r'idx \d* Selection \dStrategy \d:', flags=re.IGNORECASE)
-    pattern_idx = re.compile(r'idx \d*', flags=re.IGNORECASE)
-    pattern_selection = re.compile(r'Selection \d', flags=re.IGNORECASE)
-    pattern_strategy = re.compile(r'Strategy \d:', flags=re.IGNORECASE)
-    pattern_num = re.compile(r'idx', flags=re.IGNORECASE)
-    pattern_selection_ = re.compile(r'selection', flags=re.IGNORECASE)
-    pattern_strategy_ = re.compile(r'strategy', flags=re.IGNORECASE)
-    for line in data:
-        line = line.strip()
-        if line != '':
-            res = pattern.findall(line)
-            if len(res) == 2:
-                idx = pattern_idx.findall(res[0])
-                selection = pattern_selection.findall(res[0])
-                strategy = pattern_strategy.findall(res[0])
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-            else:
-                idx = pattern_idx.findall(line)
-                selection = pattern_selection.findall(line)
-                strategy = pattern_strategy.findall(line)
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-
-    for line in data:
-        line = line.strip()
-        if line and pattern.match(line):
-            if len(pattern.findall(line)) == 1:
-
-                # idx, selection, strategy_num = pattern_num.findall(line)
-
-                idx_ = pattern_idx.findall(line)
-                selection_ = pattern_selection.findall(line)
-                strategy_ = pattern_strategy.findall(line)
-                selection = pattern_selection_.split(selection_[0])[1][1]
-                strategy_num = pattern_strategy_.split(strategy_[0])[1][1]
-                idx = pattern_num.split(idx_[0])[1].strip(' ')
-
-                line = pattern.sub('', line)
-                strategy, utterance = line.split('\t\t')
-                # key = '{}'.format(idx)
-                strategy_x = 'strategy_{}'.format(strategy_num) + strategy
-                printdict[int(idx)].append([strategy_x.strip(), utterance.strip(), selection])
-            else:
-                raise Exception('Invalid line')
-
-    print('done!')
-    return printdict
-
-def post_process_3(index):
-    printdict = {}
-    with open('./data/strategies_json_{}.txt'.format(index)) as f_1:
-        data = f_1.readlines()
-    pattern = re.compile(r'idx \d* Selection \dStrategy \d:', flags=re.IGNORECASE)
-    pattern_idx = re.compile(r'idx \d*', flags=re.IGNORECASE)
-    pattern_selection = re.compile(r'Selection \d', flags=re.IGNORECASE)
-    pattern_strategy = re.compile(r'Strategy \d:', flags=re.IGNORECASE)
-    pattern_num = re.compile(r'idx', flags=re.IGNORECASE)
-    pattern_selection_ = re.compile(r'selection', flags=re.IGNORECASE)
-    pattern_strategy_ = re.compile(r'strategy', flags=re.IGNORECASE)
-    for line in data:
-        line = line.strip()
-        if line != '':
-            res = pattern.findall(line)
-            if len(res) == 2:
-                idx = pattern_idx.findall(res[0])
-                selection = pattern_selection.findall(res[0])
-                strategy = pattern_strategy.findall(res[0])
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-            else:
-                idx = pattern_idx.findall(line)
-                selection = pattern_selection.findall(line)
-                strategy = pattern_strategy.findall(line)
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-
-    for line in data:
-        line = line.strip()
-        if line and pattern.match(line):
-            if len(pattern.findall(line)) == 1:
-
-                # idx, selection, strategy_num = pattern_num.findall(line)
-
-                idx_ = pattern_idx.findall(line)
-                selection_ = pattern_selection.findall(line)
-                strategy_ = pattern_strategy.findall(line)
-                selection = pattern_selection_.split(selection_[0])[1][1]
-                strategy_num = pattern_strategy_.split(strategy_[0])[1][1]
-                idx = pattern_num.split(idx_[0])[1].strip(' ')
-
-                line = pattern.sub('', line)
-                strategy, utterance = line.split('\t\t')
-                # key = '{}'.format(idx)
-                strategy_x = 'strategy_{}'.format(strategy_num) + strategy
-                printdict[int(idx)].append([strategy_x.strip(), utterance.strip(), selection])
-            else:
-                raise Exception('Invalid line')
-
-    print('done!')
-    return printdict
-
-
-def post_process_v2():
-    printdict = {}
-    with open('./data/strategies_json_second.txt') as f_1:
-        data = f_1.readlines()
-    pattern = re.compile(r'idx \d* Selection \d Strategy \d:', flags=re.IGNORECASE)
-    pattern_idx = re.compile(r'idx \d*', flags=re.IGNORECASE)
-    pattern_selection = re.compile(r'Selection \d', flags=re.IGNORECASE)
-    pattern_strategy = re.compile(r'Strategy \d:', flags=re.IGNORECASE)
-    pattern_num = re.compile(r'idx', flags=re.IGNORECASE)
-    pattern_selection_ = re.compile(r'selection', flags=re.IGNORECASE)
-    pattern_strategy_ = re.compile(r'strategy', flags=re.IGNORECASE)
-    for line in data:
-        line = line.strip()
-        if line != '':
-            res = pattern.findall(line)
-            if len(res) == 2:
-                idx = pattern_idx.findall(res[0])
-                selection = pattern_selection.findall(res[0])
-                strategy = pattern_strategy.findall(res[0])
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-            else:
-                idx = pattern_idx.findall(line)
-                selection = pattern_selection.findall(line)
-                strategy = pattern_strategy.findall(line)
-                idx = pattern_num.split(idx[0])[1].strip(' ')
-                printdict[int(idx)] = []
-
-    for line in data:
-        line = line.strip()
-        if line and pattern.match(line):
-            if len(pattern.findall(line)) == 1:
-
-                # idx, selection, strategy_num = pattern_num.findall(line)
-
-                idx_ = pattern_idx.findall(line)
-                selection_ = pattern_selection.findall(line)
-                strategy_ = pattern_strategy.findall(line)
-                selection = pattern_selection_.split(selection_[0])[1][1]
-                strategy_num = pattern_strategy_.split(strategy_[0])[1][1]
-                idx = pattern_num.split(idx_[0])[1].strip(' ')
-
-                line = pattern.sub('', line)
-                strategy, utterance = line.split('\t\t')
-                # key = '{}'.format(idx)
-                strategy_x = 'strategy_{}'.format(strategy_num) + strategy
-                printdict[int(idx)].append([strategy_x.strip(), utterance.strip(), selection])
-            else:
-                raise Exception('Invalid line')
-
-    print('done!')
-    return printdict
-
-
-def examine_strategy():
-    # path = './data/strategies_2K_first_v4.json'
-    # with open(path, 'r') as f:
-    #     data = json.load(f)
-    # f.close()
-    #
-    # with open('./data/selected_final.txt', 'r') as fx:
-    #     selected_data = fx.readlines()
-    # fx.close()
-    #
-    # print('done!')
-    # data_x = {}
-    # for i, j in zip(data, selected_data):
-    #     data_x[int(i)] = data[i]
-    #     data_x[int(i)].append(j.strip())
-    #
-    # with open('./data/strategies_2K_nonjson_v5.json', 'w') as f:
-    #     json.dump(data_x, f)
-    # f.close()
-
-
-    with open('./data/strategies_2K_nonjson_v5.json', 'r') as f1:
-        data_nonjson = json.load(f1)
-
-    with open('./data/strategies_2K_json_v1.json', 'r') as f2:
-        data_json_v1 = json.load(f2)
-
-    with open('./data/strategies_2K_json_v2.json', 'r') as f3:
-        data_json_v2 = json.load(f3)
-    # pattern = re.compile(r'strategy \d: Obscuring', flags=re.IGNORECASE)
-    # pattern_num = re.compile(r'\d')
-    # count = 0
-    # count_x = 0
-    # count_index = []
-    # for i in data_nonjson:
-    #     items = data_nonjson[i]
-    #     count_item = 0
-    #     for item in items:
-    #         if not pattern_num.match(item):
-    #             if pattern.match(item):
-    #                 count+=1
-    #                 count_item+=1
-    #                 print(i)
-    #                 print(items[-1], item)
-    #                 count_index.append(i)
-    #     if count_item>0:
-    #         print('count_item', count_item)
-    #     if count_item == 1:
-    #         count_x+=1
-    #
-    # print(count_x)
-    # print(count)
-
-    pattern = re.compile(r'strategy_\d Obscuring', flags=re.IGNORECASE)
-    pattern2 = re.compile(r'encourage', flags=re.IGNORECASE)
-    pattern_num = re.compile(r'\d')
-    count = 0
-    count_x = 0
-    count_index = []
-    for i in data_json_v2:
-        items = data_json_v2[i]
-        count_item = 0
-        for it in items:
-            item = it[1]
-            if not pattern_num.match(item):
-                if pattern2.findall(item):
-                    count += 1
-                    count_item += 1
-                    print(i)
-                    print(it[-1], item)
-                    count_index.append(i)
-        if count_item > 0:
-            print('count_item', count_item)
-        if count_item == 1:
-            count_x += 1
-
-    print(count_x)
-    print(count)
-
-    print('done!')
-    return
-
 
 
 if __name__ == '__main__':
     sce_per = load_scene_persona_pair('match_sce_per_v4.json', './embedding')
     tokens = TokenPricer()
-    examine_strategy()
-    # post_process_nonjson()
-    # res = batch_strategy_generator(sce_per, token_count=tokens)
+    res = batch_strategy_generator(sce_per, token_count=tokens)
     # format_checking()
