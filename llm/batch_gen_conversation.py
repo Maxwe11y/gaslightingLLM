@@ -163,7 +163,6 @@ def batch_conv_generator(sce_persona, strategies, user_internal, emotion_list, t
         if idx < num_conversations:
             gaslighter_name = get_gaslighter_name(sce)
             psychologist_name = get_psychologist_name(name_list, gaslighter_name)
-            # strategy = strategies[str(idx)][:-1]
             strategy = []
             selected = strategies[str(idx)].pop()
             for item in strategies[str(idx)]:
