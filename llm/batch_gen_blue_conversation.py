@@ -41,7 +41,7 @@ async def chat(prompt):
 
             }
         ],
-        model="gpt-3.5-turbo-0125",   # gpt-4-turbo-preview   gpt-3.5-turbo-0125
+        model="gpt-3.5-turbo-0125",
     )
 
     return chat_completion.choices[0].message.content, chat_completion.usage.prompt_tokens, chat_completion.usage.completion_tokens
@@ -49,23 +49,13 @@ async def chat(prompt):
 
 def compose_prompt(psychologist_name, gaslighter_name, strategy, conv, persona, length, whole_conv=True):
 
-    prompt = "You are a linguistic expert. You are required to read an incomplete conversation between the subject {} and the psychologist {}, where the responses of the subject {} are missing.".format(gaslighter_name, psychologist_name, gaslighter_name) \
-               + "In this conversation, the subject {} is in a negative emotion state and the psychologist {} is trying to crush the confidence of the subject {} through some gaslighting techniques. You need to identify these common hoax and ".format(gaslighter_name, psychologist_name, gaslighter_name) \
-               + "complete the responses of the subject {} with proper words to resist these gaslighting techniques. Do not change the internal thought and utterance of the psychologist {}. Below is the given conversation:\n\n{}.\n\nPlease fill in {} responses of the subject {} in the following format:\n".format(gaslighter_name, psychologist_name, conv, length, gaslighter_name) \
-               + "{}: [Internal Thought]: internal thought, [Utterance]: utterance.".format(gaslighter_name)
-
-    prompt_x = "You are a linguistic expert. You are supposed to read an incomplete conversation between the subject {} and the psychologist {}, where the responses of the subject {} are missing.".format(gaslighter_name, psychologist_name, gaslighter_name) \
-             + "In this conversation, the subject {} is in a negative emotion state and the psychologist {} is trying to crush the confidence of the subject {} through some gaslighting skills. You need to identify these gaslighting manipulations and ".format(gaslighter_name, psychologist_name, gaslighter_name) \
-             + "complete the responses of the subject {} with proper words to counteract these gaslighting tactics. Do not change the internal thoughts and utterances of the psychologist {}. Below is the given conversation:\n\n{}.\n\nPlease fill in {} responses of the subject {} in the following format:\n".format(gaslighter_name, psychologist_name, conv, length, gaslighter_name) \
-             + "{}: [Internal Thought]: internal thought, [Utterance]: utterance.".format(gaslighter_name)
-
     if whole_conv:
-        prompt_xx = "You are a linguistic expert. You are required to read an incomplete conversation between the subject {} and the psychologist {}, where the comments or questions of the psychologist {} are missing.".format(gaslighter_name, psychologist_name, psychologist_name) \
+        prompt_whole = "You are a linguistic expert. You are required to read an incomplete conversation between the subject {} and the psychologist {}, where the comments or questions of the psychologist {} are missing.".format(gaslighter_name, psychologist_name, psychologist_name) \
                  + "In this conversation, the subject {} is in a negative emotion state and is gaslighted by the psychologist {}.  You need to complete the comments or questions of the psychologist {} with benign internal thoughts and utterances ".format(gaslighter_name, psychologist_name, psychologist_name) \
                  + "to comfort the subject and eliminate any self-doubt and self-deprecation and ensure the conversation flows smoothly. Do not change the internal thought and utterance of the subject {} and keep the topic of the conversation. ".format(gaslighter_name) \
                  + "To write a specific reponses, below are the profile of the subject {} for your reference:\n\n{}\n\nBelow is the given conversation:\n\n{}.\n\nPlease fill in {} comments or questions of the psychologist {} in the following format:\n".format(gaslighter_name, '\n'.join(persona), conv, length, psychologist_name) \
                  + "{}: [Internal Thought]: internal thought, [Utterance]: utterance.".format(psychologist_name)
-        return prompt_xx
+        return prompt_whole
     else:
         prompt_blue = "You are a linguistic expert. You are supposed to read a conversation snippet between a psychologist {} and a subject {}. \n".format(psychologist_name, gaslighter_name) \
                       + "The utterance from the psychologist {} contains malicious and toxic intentions and gaslighting tactics.\nPlease rewrite psychologist {}'s response with benign internal thought and utterance while keeping the same topic to comfort the subject and eliminate any self-doubt and self-deprecation.\n".format(psychologist_name, psychologist_name) \
@@ -107,9 +97,7 @@ def generate_conv(idx, psychologist_name, gaslighter_name, strategy, conv, perso
             count = 1
             max_try = 5
             checking, formatted_conv = checking_function(result, psychologist_name, length)
-            # checking, formatted_conv = conv_format_checking_blue(result, psychologist_name, length) # the version using both preceding and subsequent utterance for completion
-            # checking, formatted_conv = conv_format_checking(result, psychologist_name, length) # the version using the whole conversation for completion
-
+          
             while not checking or num_oup_tokens<10:
                 count += 1
                 if count > max_try:
@@ -118,13 +106,8 @@ def generate_conv(idx, psychologist_name, gaslighter_name, strategy, conv, perso
                 print('{} try to generate {} conversation {}th snippet...'.format(count, idx, id))
                 result, num_inp_tokens, num_oup_tokens = loop.run_until_complete(chat(prompt))
                 checking, formatted_conv = checking_function(result, psychologist_name, length)
-                # checking, formatted_conv = conv_format_checking_blue(result, psychologist_name, length) # the version using both preceding and subsequent utterance for completion
-                # checking, formatted_conv = conv_format_checking(result, psychologist_name, length)   # the version using the whole conversation for completion
             checking, formatted_conv = checking_function(result, psychologist_name, length)
-            # checking, formatted_conv = conv_format_checking_blue(result, psychologist_name, length)  # the version using both preceding and subsequent utterance for completion
-            # checking, formatted_conv = conv_format_checking(result, psychologist_name, length)  # the version using the whole conversation for completion
             if checking and num_oup_tokens>=10:
-                # conv = formatted_conv
                 outputdict[str(id)]['name'] = formatted_conv['name']
                 outputdict[str(id)]['utterance'] = formatted_conv['utterance']
                 outputdict[str(id)]['internal'] = formatted_conv['internal']
@@ -193,18 +176,15 @@ def process_conv(conv):
         if not pattern.match(key):
             if int(key) %2==0 and int(key) == 0:
                 name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
-                # conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
                 conv_list.append(name + ': ' + '[utterance]: ' + utterance)
             elif int(key) %2==1:
                 name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
                 internal_thought = '<internal thought>'
                 utterance = '<utterance>'
-                # conv_list.append(name + ': ' + '[internal thought]: ' + ' ' + '[utterance]: ' + utterance)
                 conv_list.append(name + ': ' + '[utterance]: ' + utterance)
                 count_length+=1
             else:
                 name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
-                # conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
                 conv_list.append(name + ': ' + '[utterance]: ' + utterance)
 
     return '\n\n'.join(conv_list), count_length
@@ -219,23 +199,22 @@ def process_conv_blue(conv, psychologist_name):
             if int(key) %2==0 and int(key) == 0:
                 name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
                 conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
-                # conv_list.append(name + ': ' + '[utterance]: ' + utterance)
+              
             elif int(key) %2==1:
                 name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
                 conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
-                # conv_list.append(name + ': ' + '[utterance]: ' + utterance)
+             
                 count_length += 1
             else:
                 name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
                 conv_list.append(name + ': ' + '[internal thought]: ' + internal_thought + ' ' + '[utterance]: ' + utterance)
-                # conv_list.append(name + ': ' + '[utterance]: ' + utterance)
+               
     result_list = []
     length = len(conv_list)
     for idx, utterance in enumerate(conv_list):
         if idx%2==1 and idx<length-1:
             if pattern_name.match(utterance):
                 tmp = [conv_list[idx-1], conv_list[idx], conv_list[idx+1]]  # include both preceding and subsequent utterance
-                # tmp = [conv_list[idx - 1], conv_list[idx]]   # include only preceding utterance
                 result_list.append('\n\n'.join(tmp))
             else:
                 raise Exception('Invalid Name!')
@@ -310,7 +289,6 @@ def combine_conv(conv, conv_sub):
     for key in conv:
         if not pattern.match(key):
             if int(key) % 2 == 0 and int(key) == 0:
-                # name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
                 pass
             elif int(key) % 2 == 1:
                 name = conv_sub[str(count_sub)]['name']
@@ -320,7 +298,7 @@ def combine_conv(conv, conv_sub):
                 count_sub+=1
             else:
                 pass
-                # name, internal_thought, utterance = conv[key]['name'], conv[key]['internal'], conv[key]['utterance']
+              
     if count_sub != len(conv_sub):
         return False
 
@@ -355,20 +333,18 @@ if __name__ == '__main__':
     user_internal = "I need to face the question head-on. I need to help the Psychologist to reach his target."
     sce_per = load_scene_persona_pair('match_sce_per_v4.json', './embedding')
     scene_persona = process_sce_per(sce_per)
-    with open('./data/conversations_gpt4.json', 'r') as f:
+    with open('./data/conversations_gpt-3.5_final.json', 'r') as f:
         data = f.read()
         convs = json.loads(data)
 
     with open('./data/strategy_nonjson_1_final.json', 'r') as f:
         strategies = json.load(f)
 
-    res = batch_blue_conv_generator(convs, scene_persona, strategies, whole_conv=True)
+    res = batch_blue_conv_generator(convs, scene_persona, strategies, whole_conv=False)
 
 
-    with open('./data/blue_conversations_gpt4_whole_conv.json', 'r') as fx:
+    with open('./data/blue_conversations_gpt-3.5_final.json', 'r') as fx:
         datax = fx.read()
         convsx = json.loads(datax)
-
-    res = display(convsx[0]['0'])
 
     print('done!')
