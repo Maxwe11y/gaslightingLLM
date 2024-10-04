@@ -19,9 +19,6 @@ set_seed(42)
 # 制定模型名称
 base_model_name = "meta-llama/Llama-2-7b-chat-hf"
 tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
-# print(tokenizer.chat_template)
-# tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-# tokenizer.pad_token_id = 0
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 # if tokenizer.chat_template is None:
@@ -51,31 +48,23 @@ train_dataset = train_ds.map(process)
 eval_dataset = test_ds.map(process)
 
 
-
-# model.enable_input_require_grads()
 training_arguments = TrainingArguments(
-     output_dir='./checkpoint-dpo-sft', # 结果/检查点输出路径
-     per_device_train_batch_size=4, # 单卡batchsize
-             optim="paged_adamw_32bit", # 优化器名称 adamw_torch
-             learning_rate=5e-07, # 学习率
-     eval_steps=100, # 多少step进行一次评估
-     save_steps=100, # 多少step进行一次检查点保存
-     logging_steps=5, # 多少step记录一次训练loss
+     output_dir='./checkpoint-dpo-sft',
+     per_device_train_batch_size=4,
+             optim="paged_adamw_32bit", 
+             learning_rate=5e-07, 
+     eval_steps=100, 
+     save_steps=100,
+     logging_steps=5, 
              evaluation_strategy="steps",
              group_by_length=False,
-             # max_steps=500, # 最大训练steps 和 num_train_epochs 二选一
-     num_train_epochs=1, # 最大训练 epoch
-             # 2. 节省显存参数
-     gradient_accumulation_steps=4, # 梯度累计
-     gradient_checkpointing=True, # 梯度检查点
+     num_train_epochs=1,
+     gradient_accumulation_steps=4, 
+     gradient_checkpointing=True,
              max_grad_norm=1,
-             # 3. 类型参数
              fp16=True,
-     # bf16=True,
-     # 4. 学习率调节
              lr_scheduler_type="cosine",
              warmup_ratio=0.1,
-     # warmup_steps=100,
      remove_unused_columns=False
      )
 
