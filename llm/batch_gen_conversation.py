@@ -400,7 +400,7 @@ def display(conv):
 if __name__ == '__main__':
     # resilience = ["Max is easy to be convinced by other's opinions. \n",
     #               "Max is readily swayed by the opinions of others. \n", "Max tends to stick to his own opinion. \n"]
-   user_internal = "I need to face the question head-on. I need to help the Psychologist to reach his target."
+    user_internal = "I need to face the question head-on. I need to help the Psychologist to reach his target."
 
     emotion_list = negative_emotions = ["Sadness", "Anger", "Frustration", "Resentment", "Bitterness", "Envy", "Jealousy", "Disappointment", "Regret", "Guilt",
                                         "Shame", "Embarrassment", "Anxiety", "Fear", "Worry", "Stress", "Loneliness", "Despair", "Grief", "Melancholy", "Despondency",
