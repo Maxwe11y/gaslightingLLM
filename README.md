@@ -35,6 +35,12 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+To elicit gaslighting plans, please use the following command.
+
+```bash
+python batch_gen_plan.py
+```
+
 To generate gaslighting conversations, please use the following command.
 
 ```bash
