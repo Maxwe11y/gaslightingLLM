@@ -64,7 +64,7 @@ python dpo_on_sft.py
 ```
 Similarly, you may adjuxt ***prepare_data_dpo.py*** to conduct different strategies.
 
-The default evaluation is conducted on the test_red.json file. You may need to run the ***test_infer.py*** to get the responses of aligned LLMs. Then, you may run the ***judge_output.py*** and employ GPT-4 as a judger to measure the responses in terms of the proposed 8 different metrics.
+The default evaluation process utilizes the test_red.json file. To obtain responses from the aligned LLMs, you may need to run the ***test_infer.py*** script. Afterward, execute ***judge_output.py*** to employ GPT-4 as the evaluator, assessing the responses based on the proposed eight metrics.
 
 ## Issues and Usage Q&A
 To ask questions, report issues or request features 🤔, please use the [GitHub Issue Tracker](https://github.com/Cyn7hia/PAED/issues). Before creating a new issue, please make sure to search for existing issues that may solve your problem.
