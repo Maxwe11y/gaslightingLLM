@@ -23,7 +23,7 @@ In this work, we aim to investigate the vulnerability of LLMs under prompt-based
 
 >
 >## Dataset
-The dataset [GasConv & SafeConv](https://github.com/Cyn7hia/PAED/blob/main/data/ConvAI2/u2t_map_all.json) is publicly available, with 105 relation types.
+The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob/master/attacks/data/) is publicly available, with 2,000 gaslighting conversations and corresponding safe conversations.
 
 ## Requirements and Installation
 * PyTorch >= 1.10.0
