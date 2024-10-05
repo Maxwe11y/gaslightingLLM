@@ -53,18 +53,16 @@ To generate safe conversations, please use the following command.
 python batch_gen_safe_conversation.py
 ```
 
-
-To change the number of test labels, you may find the variable `num_test_labels` in the 717th line in `trainer_finetune.py` and put any number from {5, 10, 15} into the list.
->For example, to change the number of test labels into 5, you may set:
-```python
->>>num_test_labels=[5]
+To conduct gaslighting or anti-gaslighting alignment, you may run the code in the attacks directory.
+>Below is the code for executing *G1*, *S1*, and *S2* strategies. To apply different strategies, you may adjust the training data in ***prepare_dataset.py***.
+```bash
+python sft.py
+```
+>Below is the code for executing *G2* and *S3* strategies. You may first run ***sft.py*** and then run the following comman:
+```bash
+python dpo_on_sft.py
 ```
 
-To change the random seeds for selecting the unseen labels, you may find the variable `seeds` in the 718th line in `trainer_finetune.py` and put any number from {0, 1, 2, 3, 4} into the list.
->For example, to change the seed into 1, you may set:
-```python
->>>seeds=[1]
-```
 
 The default evaluation is tailored for the results of single triplet extraction. To get the evaluation for multiple triplet extraction for other dataset, e.g., fewrel, you may set the flag `mode='multi'` of the function `run_eval`. Additionally, you need to remember to place the target dataset under the directory of `/outputs/data/splits/zero_rte/[YOURDATA]/unseen_[x]_seed_[x]/`, which should conver train.json, dev.json and test.json.
 
