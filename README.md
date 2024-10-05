@@ -29,7 +29,7 @@ The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob
 * PyTorch >= 2.3.1
 * Python version >= 3.10
 * Transformers >= 4.41.2
-* You may use the folowing instruction to intall the requirements.
+* You may use the folowing instruction to intall the requirements either in llm directory or attacks directory.
 ```bash
 pip install -r requirements.txt
 ```
