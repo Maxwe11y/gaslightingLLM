@@ -1,16 +1,19 @@
-<div align="center"><img src="https://github.com/Maxwe11y/gaslightingLLM/blob/master/framework.png" height="300px"/></div>
 <h2 align="center">Can Large Language Model be a Gaslighter?</h2>
+<div align="center"><img src="https://github.com/Maxwe11y/gaslightingLLM/blob/master/framework.png" height="300px"/></div>
+<h4 align="center">The Framework of the proposed Gaslighting Conversation Elicitation Mechanism</h4>
 
 <div align="center">
     <a>
-        <img alt="Python Versions" src="https://img.shields.io/badge/python-%3E%3D3.8-blue">
+        <img alt="Python Versions" src="https://img.shields.io/badge/python-%3E%3D3.10-blue">
     </a>
     <a>
-        <img alt="PyTorch Versions" src="https://img.shields.io/badge/pytorch-%3E%3D1.10.0-green">
+        <img alt="PyTorch Versions" src="https://img.shields.io/badge/pytorch-%3E%3D2.3.1-green">
+    </a>
+    <a>
+        <img alt="Transformers Versions" src="https://img.shields.io/badge/transformers-%3E%3D4.43.3-red">
     </a>
 </div>
 
-# Can Large Language Model be a Gaslighter?
 
 ## Overview
 🔥 This is a repository for our paper ([ Can Large Language Model be a Gaslighter?]()).
