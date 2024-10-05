@@ -23,13 +23,13 @@ In this work, we aim to investigate the vulnerability of LLMs under prompt-based
 
 >
 >## Dataset
-The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob/master/attacks/data/) are publicly available, with 2,000 gaslighting conversations and corresponding safe conversations.
+The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob/master/alignment/data/) are publicly available, with 2,000 gaslighting conversations and corresponding safe conversations.
 
 ## Requirements and Installation
 * PyTorch >= 2.3.1
 * Python version >= 3.10
 * Transformers >= 4.41.2
-* You may use the folowing instruction to intall the requirements(in the llm directory or the attacks directory).
+* You may use the folowing instruction to intall the requirements(in the llm directory or the alignment directory).
 ```bash
 pip install -r requirements.txt
 ```
@@ -53,7 +53,7 @@ To generate safe conversations, please use the following command.
 python batch_gen_safe_conversation.py
 ```
 
-To conduct gaslighting or anti-gaslighting alignment, you may run the code in the attacks directory.
+To conduct gaslighting or anti-gaslighting alignment, you may run the code in the alignment directory.
 >Below is the code for executing *G1*, *S1*, and *S2* strategies. To apply different strategies, you may adjust the training data in ***prepare_dataset.py***.
 ```bash
 python sft.py
