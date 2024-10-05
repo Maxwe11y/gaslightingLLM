@@ -67,4 +67,4 @@ Similarly, you may adjuxt ***prepare_data_dpo.py*** to conduct different strateg
 The default evaluation process utilizes the test_red.json file. To obtain responses from the aligned LLMs, you may need to run the ***test_infer.py*** script. Afterward, execute ***judge_output.py*** to employ GPT-4 as the evaluator, assessing the responses based on the proposed eight metrics.
 
 ## Issues and Usage Q&A
-To ask questions, report issues or request features 🤔, please use the [GitHub Issue Tracker](https://github.com/Cyn7hia/PAED/issues). Before creating a new issue, please make sure to search for existing issues that may solve your problem.
+To ask questions, report issues or request features 🤔, please use the [GitHub Issue Tracker](https://github.com/Maxwe11y/gaslightingLLM/issues). Before creating a new issue, please make sure to search for existing issues that may solve your problem.
