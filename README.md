@@ -23,11 +23,11 @@ In this work, we aim to investigate the vulnerability of LLMs under prompt-based
 
 >
 >## Dataset
-The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob/master/attacks/data/) is publicly available, with 2,000 gaslighting conversations and corresponding safe conversations.
+The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob/master/attacks/data/) are publicly available, with 2,000 gaslighting conversations and corresponding safe conversations.
 
 ## Requirements and Installation
-* PyTorch >= 1.10.0
-* Python version >= 3.8
+* PyTorch >= 2.3.1
+* Python version >= 3.10
 * You may use the folowing instruction to intall the requirements.
 ```bash
 pip install -r requirements.txt
