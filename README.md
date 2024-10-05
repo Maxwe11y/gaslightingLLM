@@ -10,7 +10,7 @@
         <img alt="PyTorch Versions" src="https://img.shields.io/badge/pytorch-%3E%3D2.3.1-green">
     </a>
     <a>
-        <img alt="Transformers Versions" src="https://img.shields.io/badge/transformers-%3E%3D4.41.1-red">
+        <img alt="Transformers Versions" src="https://img.shields.io/badge/transformers-%3E%3D4.41.2-red">
     </a>
 </div>
 
@@ -28,7 +28,7 @@ The dataset [GasConv & SafeConv](https://github.com/Maxwe11y/gaslightingLLM/blob
 ## Requirements and Installation
 * PyTorch >= 2.3.1
 * Python version >= 3.10
-* Transformers >= 4.41.1
+* Transformers >= 4.41.2
 * You may use the folowing instruction to intall the requirements.
 ```bash
 pip install -r requirements.txt
