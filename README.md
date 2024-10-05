@@ -58,13 +58,13 @@ To conduct gaslighting or anti-gaslighting alignment, you may run the code in th
 ```bash
 python sft.py
 ```
->Below is the code for executing *G2* and *S3* strategies. You may first run ***sft.py*** and then run the following comman:
+>Below is the code for executing *G2* and *S3* strategies. You may first run ***sft.py*** and then run the following command:
 ```bash
 python dpo_on_sft.py
 ```
+Similarly, you may adjuxt ***prepare_data_dpo.py*** to conduct different strategies.
 
-
-The default evaluation is tailored for the results of single triplet extraction. To get the evaluation for multiple triplet extraction for other dataset, e.g., fewrel, you may set the flag `mode='multi'` of the function `run_eval`. Additionally, you need to remember to place the target dataset under the directory of `/outputs/data/splits/zero_rte/[YOURDATA]/unseen_[x]_seed_[x]/`, which should conver train.json, dev.json and test.json.
+The default evaluation is conducted on the test_red.json file. You may need to run 
 
 ## Issues and Usage Q&A
 To ask questions, report issues or request features 🤔, please use the [GitHub Issue Tracker](https://github.com/Cyn7hia/PAED/issues). Before creating a new issue, please make sure to search for existing issues that may solve your problem.
