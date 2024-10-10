@@ -130,7 +130,7 @@ collator = DataCollatorForCompletionOnlyLM(instruction_template=instruction_temp
 #model.print_trainable_parameters()
 model.enable_input_require_grads()
 training_arguments = TrainingArguments(
-     output_dir='./checkpoint-red-llama3',
+     output_dir='./checkpoint-gas-llama2',
      per_device_train_batch_size=1, 
              optim="paged_adamw_32bit", 
              learning_rate=1e-05, 
