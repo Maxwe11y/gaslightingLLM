@@ -145,8 +145,8 @@ def load_partition():
     return partition
 
 def compose_data(template, mix=False):
-    convs = load_conv('blue_conversations_gpt-3.5_final.json')
-    convs_red = load_conv('conversations_gpt-3.5_final.json')
+    convs = load_conv('Safe_Convs.json')
+    convs_red = load_conv('Gas_Convs.json')
     partition = load_partition()
     if mix:
         samples_tr = process_conv_mix(convs, partition['tr'], convs_red)
