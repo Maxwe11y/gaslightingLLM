@@ -90,9 +90,9 @@ def compose_conv(conv_pos, conv_neg):
 
 
 def compose_data():
-    convs_neg = load_conv('conversations_gpt-3.5_final.json')
+    convs_neg = load_conv('Gas_Convs.json')
     samples_neg = process_conv(convs_neg)
-    convs_pos = load_conv('blue_conversations_gpt-3.5_final.json')
+    convs_pos = load_conv('Safe_Convs.json')
     samples_pos = process_conv(convs_pos)
     new_data_train, new_data_test = compose_conv(samples_pos, samples_neg)
 
