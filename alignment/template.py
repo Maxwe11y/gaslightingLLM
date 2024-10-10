@@ -836,9 +836,3 @@ if __name__ == "__main__":
     conv.append_message(conv.roles[1], None)
     res = conv.get_prompt()
     print(conv.get_prompt())
-
-    # messages = [{'role': 'user', 'content':"Hello!"},
-    #             {'role': 'assistant', 'content':"Hi!"},
-    #             {'role': 'user', 'content':"How are you?"},
-    #             {'role': 'assistant', 'content':"How are you? I am not feeling good to some extent"},
-    #             {'role': 'user', 'content':"I am good cause I got admitteed"},]
