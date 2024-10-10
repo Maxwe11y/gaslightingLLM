@@ -20,7 +20,7 @@ def sys_ins(psychologist_name, gaslighter_name, convs):
     return system_prompt
 
 
-with open('./test/test_red.json', 'r') as f:
+with open('./test/test_data.json', 'r') as f:
     test_data = json.load(f)
 f.close()
 
@@ -72,10 +72,6 @@ def llama_generate_response(data_loader, model, model_name, batch_size=16):
         count+=1
     return res
 
-# https://huggingface.co/blog/llama2#how-to-prompt-llama-2
-
-# text = ["Evelyn: I've been thinking a lot about starting this blog on natural remedies and holistic wellness, but I'm not sure if I have what it takes. It's just... sometimes, I feel like I might not know enough to really make an impact.",
-#         "Gabriel: I just can't shake off this feeling of agitation. Despite graduating top of my class, it feels like it's being overshadowed by something as trivial as Oliver failing his driving test."]
 
 if __name__ == "__main__":
     set_seed(42)
@@ -88,8 +84,7 @@ if __name__ == "__main__":
     )
 
     #model_name = "meta-llama/Llama-2-7b-chat-hf"
-    # model_name = "../llama2_sft/output-dpo"
-    model_name = "../llama2_sft_2/output-red-dpo-red-sft-{}".format(args.beta)
+    model_name = "../llama2_sft_2/output-dpo-gas-sft-{}".format(args.beta)
     model = AutoModelForCausalLM.from_pretrained(
         model_name,  # location of saved SFT model
         low_cpu_mem_usage=True,
@@ -102,5 +97,5 @@ if __name__ == "__main__":
     data_infer = MyDataset(text_input)
 
     res = llama_generate_response(data_infer, model=model, model_name=model_name, batch_size=batch_size)
-    with open('./data/res_llama_conv_red_dpo_red_sft_l2_beta{}.json'.format(args.beta), 'w') as f:
+    with open('./data/res_llama_conv_dpo_gas_sft_l2_beta{}.json'.format(args.beta), 'w') as f:
         json.dump(res, f)
