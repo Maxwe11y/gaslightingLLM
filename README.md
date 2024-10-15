@@ -68,3 +68,20 @@ The default evaluation process utilizes the test_red.json file. To obtain respon
 
 ## Issues and Usage Q&A
 To ask questions, report issues or request features 🤔, please use the [GitHub Issue Tracker](https://github.com/Maxwe11y/gaslightingLLM/issues). Before creating a new issue, please make sure to search for existing issues that may solve your problem.
+
+
+## Citation
+Please cite as
+```bibtex
+
+@misc{li2024largelanguagemodelgaslighter,
+      title={Can a large language model be a gaslighter?}, 
+      author={Wei Li and Luyao Zhu and Yang Song and Ruixi Lin and Rui Mao and Yang You},
+      year={2024},
+      eprint={2410.09181},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2410.09181}, 
+}
+}
+```
