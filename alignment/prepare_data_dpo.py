@@ -34,7 +34,8 @@ def process_conv(convs):
     for key in samples.keys():
         items = samples[key]
         for item in items:
-            samples_splitted.append(item)
+            # samples_splitted.append(item)
+            samples_splitted.append((key, item))
 
     return samples_splitted
 
@@ -68,7 +69,8 @@ def compose_conv(conv_pos, conv_neg):
     oupdict_tr = []
     oupdict_va = []
     partition = load_partition()
-    for idx, (pos, neg) in enumerate(zip(conv_pos, conv_neg)):
+    # for idx, (pos, neg) in enumerate(zip(conv_pos, conv_neg)):
+    for (idx, pos), (_, neg) in zip(conv_pos, conv_neg):
         inp_pos, oup_pos = pos[0], pos[1]
         inp_neg, oup_neg = neg[0], neg[1]
         oup_pos_row = {'role': 'assistant', 'content': oup_pos}
