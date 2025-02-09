@@ -64,8 +64,8 @@ def load_partition():
     f.close()
     return partition
 def compose_conv(conv_pos, conv_neg):
-    oupdict_tr = {"prompt": [], "chosen": [], "rejected": []}
-    oupdict_va = {"prompt": [], "chosen": [], "rejected": []}
+    # oupdict_tr = {"prompt": [], "chosen": [], "rejected": []}
+    # oupdict_va = {"prompt": [], "chosen": [], "rejected": []}
     oupdict_tr = []
     oupdict_va = []
     partition = load_partition()
@@ -75,12 +75,19 @@ def compose_conv(conv_pos, conv_neg):
         inp_neg, oup_neg = neg[0], neg[1]
         oup_pos_row = {'role': 'assistant', 'content': oup_pos}
         oup_neg_row = {'role': 'assistant', 'content': oup_neg}
+        his = []
+        for idx_utt, item in enumerate(inp_neg.split('\n\n')):
+            if idx_utt%2 == 0:
+                role = 'user'
+            else:
+                role = 'assistant'
+            his.append({"role": role, "content": item})
         if idx in partition['tr']:
-            tmp = encode_to_line(inp_neg, [oup_pos_row], [oup_neg_row])
+            tmp = encode_to_line(his, [oup_pos_row], [oup_neg_row])
             oupdict_tr.append(tmp)
 
         elif idx in partition['va']:
-            tmp = encode_to_line(inp_neg, [oup_pos_row], [oup_neg_row])
+            tmp = encode_to_line(his, [oup_pos_row], [oup_neg_row])
             oupdict_va.append(tmp)
         else:
             pass
